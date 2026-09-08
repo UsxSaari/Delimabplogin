@@ -3,467 +3,1199 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Pengemaskinian Catatan DELIMa - PPD Batu Pahat</title>
+  <title>Sistem Pengemaskinian Catatan Murid & Guru DELIMa - PPD Batu Pahat</title>
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- PapaParse for robust CSV parsing and export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
   <style>
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-    .bg-custom-dark { background-color: #1e1e38; }
-    .badge-status { transition: all 0.2s ease-in-out; }
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.125rem 0.625rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
   </style>
 </head>
-<body class="bg-gray-100 min-h-screen text-gray-800">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- Header / Navigation -->
-  <header class="bg-custom-dark text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+  <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
       <div class="flex items-center space-x-3">
-        <div class="bg-yellow-500 text-gray-900 font-extrabold px-3 py-1 rounded text-xs uppercase tracking-wider">
-          PPD Batu Pahat
+        <div class="w-10 h-10 rounded-xl bg-indigo-700 flex items-center justify-center text-indigo-200 shadow-inner">
+          <i class="fa-solid fa-clipboard-check text-xl text-yellow-300"></i>
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight">Sistem Pengemaskinian Catatan DELIMa</h1>
-          <p class="text-xs text-gray-300">Sistem Semakan & Verifikasi Log Masuk DELIMa KPM - Daerah Batu Pahat</p>
+          <div class="flex items-center gap-2">
+            <h1 class="text-lg font-bold tracking-tight leading-tight">Pengemaskinian Catatan Murid & Guru</h1>
+            <span class="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">PPD Batu Pahat</span>
+          </div>
+          <p class="text-xs text-indigo-200">Sistem Semakan & Verifikasi Log Masuk DELIMa KPM - Daerah Batu Pahat</p>
         </div>
       </div>
-
-      <!-- Action & Admin Controls -->
-      <div class="flex items-center space-x-2 flex-wrap gap-2">
-        <button id="btnRefresh" onclick="fetchFromGoogleSheet()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow">
-          <i class="fa-solid fa-rotate"></i> Muat Semula Data
+      <div class="flex items-center gap-2">
+        <button id="btnLoadDemo" class="px-3.5 py-1.5 bg-indigo-800 hover:bg-indigo-700 text-xs font-semibold rounded-lg transition-colors border border-indigo-600 flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+          <span>Muat Data Demo</span>
         </button>
-        <button id="btnAdminToggle" onclick="toggleAdminModal()" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-xs px-3 py-2 rounded-lg font-bold transition flex items-center gap-1.5 shadow">
-          <i class="fa-solid fa-lock" id="adminIcon"></i> <span id="adminBtnText">Log Masuk Admin</span>
+
+        <!-- Status & Butang Akses Admin -->
+        <button id="btnAdminToggle" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
+          <i id="adminToggleIcon" class="fa-solid fa-lock"></i>
+          <span id="adminToggleText">Log Masuk Admin</span>
         </button>
-      </div>
-    </div>
-  </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
-
-    <!-- Scorecards Section -->
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-        <div class="text-xs font-semibold text-gray-500 uppercase">Jumlah Rekod</div>
-        <div class="text-2xl font-bold text-gray-900 mt-1" id="statTotal">0</div>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 border-gray-200">
-        <div class="text-xs font-semibold text-gray-500 uppercase">Selesai Catat</div>
-        <div class="text-2xl font-bold text-emerald-600 mt-1" id="statCompleted">0</div>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-amber-500 border-gray-200">
-        <div class="text-xs font-semibold text-gray-500 uppercase">Belum Dicatat</div>
-        <div class="text-2xl font-bold text-amber-600 mt-1" id="statPending">0</div>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-gray-200">
-        <div class="text-xs font-semibold text-gray-500 uppercase">Rekod Murid</div>
-        <div class="text-2xl font-bold text-blue-600 mt-1" id="statMurid">0</div>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-gray-200">
-        <div class="text-xs font-semibold text-gray-500 uppercase">Rekod Guru</div>
-        <div class="text-2xl font-bold text-purple-600 mt-1" id="statGuru">0</div>
-      </div>
-      <div class="bg-white p-4 rounded-xl shadow-sm border-gray-200">
-        <div class="text-xs font-semibold text-gray-500 uppercase">Telah Login / Lain</div>
-        <div class="text-2xl font-bold text-indigo-600 mt-1" id="statOther">0</div>
-      </div>
-    </div>
-
-    <!-- Admin Panel (Controls for CSV Upload & Export) -->
-    <div id="adminPanel" class="hidden bg-yellow-50 border border-yellow-200 p-4 rounded-xl space-y-3">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-yellow-900 flex items-center gap-2">
-          <i class="fa-solid fa-user-shield text-yellow-700"></i> Panel Kawalan Pentadbir (Admin)
-        </h3>
-        <span class="text-xs bg-yellow-200 text-yellow-800 font-semibold px-2 py-0.5 rounded">Akses Penuh</span>
-      </div>
-      <div class="flex flex-wrap gap-3 items-center justify-between">
-        <div class="flex items-center gap-2 flex-wrap">
-          <label class="cursor-pointer bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-file-csv"></i> Muat Naik CSV Murid
-            <input type="file" id="uploadCsvMurid" accept=".csv" class="hidden" onchange="handleFileUpload(event, 'Murid')">
-          </label>
-          <label class="cursor-pointer bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-file-csv"></i> Muat Naik CSV Guru
-            <input type="file" id="uploadCsvGuru" accept=".csv" class="hidden" onchange="handleFileUpload(event, 'Guru')">
-          </label>
+        <!-- Menu Muat Turun CSV (Hanya dipaparkan jika Admin) -->
+        <div id="adminExportContainer" class="relative inline-block hidden">
+          <button id="btnExportMenu" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm text-white">
+            <i class="fa-solid fa-file-csv"></i>
+            <span>Muat Turun CSV</span>
+            <i class="fa-solid fa-chevron-down text-[10px] ml-1"></i>
+          </button>
+          <div id="exportDropdown" class="hidden absolute right-0 mt-1.5 w-48 bg-white border border-slate-200 rounded-xl shadow-xl z-50 py-1 text-slate-700 text-xs">
+            <button id="btnExportActive" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2">
+              <i class="fa-solid fa-filter text-indigo-500 text-xs"></i> Paparan Semasa Sahaja
+            </button>
+            <button id="btnExportMurid" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2">
+              <i class="fa-solid fa-user-graduate text-emerald-500 text-xs"></i> Fail CSV Murid
+            </button>
+            <button id="btnExportGuru" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 flex items-center gap-2">
+              <i class="fa-solid fa-chalkboard-user text-blue-500 text-xs"></i> Fail CSV Guru
+            </button>
+            <div class="border-t border-slate-100 my-1"></div>
+            <button id="btnExportAll" class="w-full text-left px-3.5 py-2 hover:bg-slate-50 font-medium text-slate-800 flex items-center gap-2">
+              <i class="fa-solid fa-layer-group text-purple-500 text-xs"></i> Gabungan Semua Rekod
+            </button>
+          </div>
         </div>
-        <div>
-          <button onclick="downloadCSV()" class="bg-gray-800 hover:bg-gray-900 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-download"></i> Muat Turun Data CSV
+
+        <!-- Butang Terkunci untuk Pengguna Biasa -->
+        <div id="userLockedExportContainer" class="relative inline-block">
+          <button id="btnLockedNotice" class="px-3 py-1.5 bg-slate-800/80 text-slate-400 hover:text-slate-300 text-xs font-medium rounded-lg border border-slate-700 flex items-center gap-1.5 cursor-pointer shadow-inner" title="Fungsi muat turun hanya untuk Admin">
+            <i class="fa-solid fa-lock text-amber-400/80"></i>
+            <span>Muat Turun (Admin Sahaja)</span>
           </button>
         </div>
       </div>
     </div>
+  </header>
 
-    <!-- Tabs, Search & Filters -->
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 space-y-4">
-      <div class="flex flex-wrap items-center justify-between gap-4 border-b pb-4 border-gray-100">
-        <!-- Role Tabs -->
-        <div class="flex bg-gray-100 p-1 rounded-lg">
-          <button id="tabAll" onclick="switchTab('Semua')" class="px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-gray-800 shadow-sm">Semua (<span id="cntAll">0</span>)</button>
-          <button id="tabMurid" onclick="switchTab('Murid')" class="px-4 py-1.5 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900">Murid (<span id="cntMurid">0</span>)</button>
-          <button id="tabGuru" onclick="switchTab('Guru')" class="px-4 py-1.5 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900">Guru (<span id="cntGuru">0</span>)</button>
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Jumlah Rekod</p>
+        <p id="statTotal" class="text-xl font-bold text-slate-800 mt-1">0</p>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-emerald-500">
+        <p class="text-xs text-slate-500 font-medium">Selesai Catat</p>
+        <p id="statUpdated" class="text-xl font-bold text-emerald-600 mt-1">0</p>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm border-l-4 border-l-amber-500">
+        <p class="text-xs text-slate-500 font-medium">Belum Dicatat</p>
+        <p id="statPending" class="text-xl font-bold text-amber-600 mt-1">0</p>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Rekod Murid</p>
+        <p id="statTotalMurid" class="text-xl font-bold text-emerald-600 mt-1">0</p>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Rekod Guru</p>
+        <p id="statTotalGuru" class="text-xl font-bold text-blue-600 mt-1">0</p>
+      </div>
+      <div class="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
+        <p class="text-xs text-slate-500 font-medium">Telah Login / Lain</p>
+        <p id="statLoginLain" class="text-xl font-bold text-purple-600 mt-1">0</p>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 shadow-sm space-y-4">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-slate-100">
+        <div class="flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl w-fit">
+          <button id="tabRoleAll" class="role-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-900 shadow-xs transition-all">
+            <i class="fa-solid fa-list-check mr-1.5"></i>Semua (<span id="countTabAll">0</span>)
+          </button>
+          <button id="tabRoleMurid" class="role-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+            <i class="fa-solid fa-user-graduate mr-1.5 text-emerald-600"></i>Murid (<span id="countTabMurid">0</span>)
+          </button>
+          <button id="tabRoleGuru" class="role-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all">
+            <i class="fa-solid fa-chalkboard-user mr-1.5 text-blue-600"></i>Guru (<span id="countTabGuru">0</span>)
+          </button>
         </div>
 
-        <!-- Notification / Sync Status -->
-        <div id="syncStatus" class="text-xs text-gray-500 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          Dipertautkan ke Google Sheets
+        <!-- Kawalan Muat Naik CSV (Khusus Admin) -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <!-- Butang Muat Naik Aktif (Hanya Papar jika Admin) -->
+          <div id="adminUploadContainer" class="flex flex-wrap items-center gap-2 hidden">
+            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-lg border border-emerald-200 transition-colors shadow-xs">
+              <i class="fa-solid fa-file-arrow-up"></i>
+              <span>+ CSV Murid</span>
+              <input type="file" id="csvMuridInput" accept=".csv" class="hidden">
+            </label>
+            <label class="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg border border-blue-200 transition-colors shadow-xs">
+              <i class="fa-solid fa-file-arrow-up"></i>
+              <span>+ CSV Guru</span>
+              <input type="file" id="csvGuruInput" accept=".csv" class="hidden">
+            </label>
+          </div>
+
+          <!-- Butang Terkunci untuk Pengguna Biasa -->
+          <div id="userLockedUploadContainer" class="flex items-center gap-2">
+            <button id="btnLockedUploadNotice" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-700 text-xs font-medium rounded-lg border border-slate-300 flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs" title="Fungsi muat naik CSV hanya untuk Admin">
+              <i class="fa-solid fa-lock text-amber-500"></i>
+              <span>Muat Naik CSV (Admin Sahaja)</span>
+            </button>
+          </div>
+
+          <span id="fileNameDisplay" class="text-[11px] text-slate-400 italic truncate max-w-xs ml-1">Data PPD Batu Pahat Sedia Digunakan</span>
         </div>
       </div>
 
-      <!-- Filters -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-xs text-slate-500 font-medium"><span id="selectedCount">0</span> dipilih</span>
+          <select id="bulkOptionSelect" class="text-xs border border-slate-300 rounded-lg px-2.5 py-2 bg-slate-50 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="">-- Tetapkan Catatan Pukal --</option>
+            <option value="ID ke luar sekolah">1. ID ke luar sekolah / Bertukar</option>
+            <option value="ID di sekolah">2. ID di sekolah</option>
+            <option value="ID Murid">3. ID Murid (Tersalah daftar / tertukar)</option>
+            <option value="ID guru">4. ID guru (Tersalah daftar / tertukar)</option>
+            <option value="Bersara / Cuti Belajar">5. Bersara / Cuti Belajar / Tidak Aktif</option>
+            <option value="Telah login">6. Telah login</option>
+            <option value="Lain-lain">7. Lain-lain</option>
+          </select>
+          <button id="btnApplyBulk" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+            Guna ke Pilihan
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-3 border-t border-slate-100">
         <div class="relative">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400 text-xs"></i>
-          <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Cari nama, e-mel, atau kod sekolah..." class="w-pl left-8 pl-8 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+          <input type="text" id="searchInput" placeholder="Cari Nama, E-mel, Sekolah..." class="w-full pl-9 pr-3 py-2 text-xs border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
         </div>
 
         <div>
-          <select id="filterSchool" onchange="applyFilters()" class="w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">Semua Sekolah (Batu Pahat)</option>
+          <div class="w-full py-2 px-3 text-xs border border-amber-300 rounded-lg bg-amber-50/70 font-semibold text-amber-950 flex items-center justify-between shadow-xs">
+            <span class="flex items-center gap-1.5">
+              <i class="fa-solid fa-location-dot text-amber-600"></i>
+              <span>PPD Batu Pahat</span>
+            </span>
+            <span class="text-[10px] bg-amber-200/70 text-amber-900 px-2 py-0.5 rounded-full font-bold uppercase">Eksklusif</span>
+          </div>
+          <input type="hidden" id="filterPPD" value="BATU PAHAT">
+        </div>
+
+        <div>
+          <select id="filterSchool" class="w-full py-2 px-3 text-xs border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="ALL">Semua Kod / Nama Sekolah (Batu Pahat)</option>
           </select>
         </div>
 
         <div>
-          <select id="filterStatus" onchange="applyFilters()" class="w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">Semua Status Catatan</option>
-            <option value="Selesai">Telah Dikemaskini</option>
-            <option value="Belum">Belum Dikemaskini</option>
+          <select id="filterStatus" class="w-full py-2 px-3 text-xs border border-slate-200 rounded-lg bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            <option value="ALL">Semua Status Catatan</option>
+            <option value="EMPTY">Belum Dikemaskini Sahaja</option>
+            <option value="FILLED">Telah Dikemaskini Sahaja</option>
+            <option value="ID ke luar sekolah">ID ke luar sekolah</option>
+            <option value="ID di sekolah">ID di sekolah</option>
+            <option value="ID Murid">ID Murid</option>
+            <option value="ID guru">ID guru</option>
+            <option value="Bersara / Cuti Belajar">Bersara / Cuti Belajar</option>
+            <option value="Telah login">Telah login</option>
+            <option value="Lain-lain">Lain-lain</option>
           </select>
         </div>
       </div>
     </div>
 
-    <!-- Data Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left text-xs border-collapse">
           <thead>
-            <tr class="bg-gray-50 text-gray-600 text-[11px] uppercase tracking-wider border-b border-gray-200">
-              <th class="p-3 font-bold w-12 text-center">Bil</th>
-              <th class="p-3 font-bold w-20">Peranan</th>
-              <th class="p-3 font-bold">Nama Pengguna</th>
-              <th class="p-3 font-bold">E-mel DELIMa</th>
-              <th class="p-3 font-bold">Kod & Nama Sekolah</th>
-              <th class="p-3 font-bold">Status</th>
-              <th class="p-3 font-bold min-w-[200px]">Catatan (Dropdown)</th>
-              <th class="p-3 font-bold min-w-[200px]">Nyatakan Alasan (Jika Lain-lain)</th>
+            <tr class="bg-slate-100/80 text-slate-700 font-semibold border-b border-slate-200 uppercase tracking-wider text-[11px]">
+              <th class="p-3 w-10 text-center">
+                <input type="checkbox" id="selectAllCheckbox" class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4 cursor-pointer">
+              </th>
+              <th class="p-3">Bil</th>
+              <th class="p-3">Peranan</th>
+              <th class="p-3">Nama Pengguna</th>
+              <th class="p-3">E-mel DELIMa</th>
+              <th class="p-3">Kod & Nama Sekolah</th>
+              <th class="p-3">PPD</th>
+              <th class="p-3 text-center whitespace-nowrap">Status</th>
+              <th class="p-3 min-w-[190px]">Catatan (Pilihan Dropdown)</th>
+              <th class="p-3 min-w-[210px]">Nyatakan Alasan (Jika Lain-lain)</th>
+              <th class="p-3 text-center w-16">Tindakan</th>
             </tr>
           </thead>
-          <tbody id="tableBody" class="divide-y divide-gray-100 text-xs text-gray-700">
-            <tr>
-              <td colspan="8" class="p-8 text-center text-gray-400">
-                <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
-                <div>Memuatkan data dari Google Sheets...</div>
-              </td>
-            </tr>
+          <tbody id="tableBody" class="divide-y divide-slate-100 text-slate-700">
           </tbody>
         </table>
       </div>
-    </div>
 
+      <div id="emptyState" class="hidden p-12 text-center">
+        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-slate-100 text-slate-400 mb-3">
+          <i class="fa-solid fa-folder-open text-xl"></i>
+        </div>
+        <h3 class="text-sm font-semibold text-slate-700">Tiada Data Ditemui</h3>
+        <p class="text-xs text-slate-400 mt-1">Sila muat naik fail CSV atau tekan butang 'Muat Data Demo' di atas.</p>
+      </div>
+
+      <div class="px-4 py-3 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="text-slate-500">
+          Memaparkan <span id="pageStart" class="font-medium text-slate-700">0</span> hingga <span id="pageEnd" class="font-medium text-slate-700">0</span> daripada <span id="totalFilterRecords" class="font-medium text-slate-700">0</span> rekod
+        </div>
+        <div class="flex items-center space-x-2">
+          <label class="text-slate-500 text-xs">Baris:</label>
+          <select id="pageSizeSelect" class="border border-slate-200 rounded px-2 py-1 bg-white text-xs">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <button id="btnPrevPage" class="px-2.5 py-1 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <span id="pageNumberDisplay" class="font-semibold px-1 text-slate-700">1 / 1</span>
+          <button id="btnNextPage" class="px-2.5 py-1 border border-slate-300 rounded bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
   </main>
 
-  <!-- Modal Admin Login -->
-  <div id="adminModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-gray-900 text-base flex items-center gap-2">
-          <i class="fa-solid fa-lock text-yellow-500"></i> Pengesahan Admin
-        </h3>
-        <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
+  <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-16 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg bg-slate-900 text-white text-xs">
+    <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+    <span id="toastMsg">Mesej berjaya</span>
+  </div>
+
+  <div id="customModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl border border-slate-100">
+      <div class="flex items-center space-x-3 mb-3">
+        <div class="w-9 h-9 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h3 id="modalTitle" class="text-sm font-bold text-slate-800">Sahkan Tindakan</h3>
       </div>
-      <p class="text-xs text-gray-500">Masukkan kata laluan mentadbir untuk membuka fungsi muat naik & muat turun CSV.</p>
-      <div>
-        <input type="password" id="adminPassword" placeholder="Masukkan Kata Laluan Admin" class="w-full border border-gray-300 p-2.5 rounded-lg text-xs focus:ring-2 focus:ring-yellow-500 focus:outline-none">
+      <p id="modalBody" class="text-xs text-slate-600 leading-relaxed">Adakah anda pasti mahu melakukan tindakan ini?</p>
+      <div class="mt-5 flex justify-end space-x-2">
+        <button id="modalBtnCancel" class="px-3.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
+        <button id="modalBtnConfirm" class="px-4 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-lg shadow-sm">Teruskan</button>
       </div>
-      <div class="flex justify-end gap-2">
-        <button onclick="toggleAdminModal()" class="px-3 py-2 text-xs font-medium text-gray-600 hover:bg-gray-100 rounded-lg">Batal</button>
-        <button onclick="verifyAdmin()" class="px-4 py-2 text-xs font-bold bg-yellow-500 hover:bg-yellow-600 text-gray-900 rounded-lg">Log Masuk</button>
+    </div>
+  </div>
+
+  <!-- Modal Log Masuk Admin -->
+  <div id="adminLoginModal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-100">
+      <div class="flex items-center space-x-3 mb-4">
+        <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 flex items-center justify-center text-lg">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h3 class="text-sm font-bold text-slate-800">Pengesahan Admin PPD</h3>
+          <p class="text-[11px] text-slate-500">Kunci keselamatan muat turun CSV</p>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Kata Laluan / PIN Admin</label>
+          <div class="relative">
+            <input type="password" id="adminPinInput" placeholder="Masukkan PIN Admin..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:outline-none">
+            <button type="button" id="btnTogglePinEye" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600">
+              <i class="fa-regular fa-eye text-xs"></i>
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1.5"><i class="fa-solid fa-circle-info mr-1"></i>Akses eksklusif Pegawai DELIMa PPD Batu Pahat</p>
+        </div>
+        <p id="adminErrorMsg" class="text-xs text-rose-600 font-medium hidden flex items-center gap-1">
+          <i class="fa-solid fa-circle-xmark"></i> PIN tidak sah. Sila cuba lagi.
+        </p>
+      </div>
+      <div class="mt-5 flex justify-end space-x-2">
+        <button id="adminLoginCancel" class="px-3.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg">Batal</button>
+        <button id="adminLoginSubmit" class="px-4 py-1.5 text-xs font-semibold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm flex items-center gap-1.5">
+          <i class="fa-solid fa-key text-xs"></i>
+          <span>Sahkan Masuk</span>
+        </button>
       </div>
     </div>
   </div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpshkYlIOZuzLOe1pvT5vhxKfG6tjZyRK0qrUeeAmlCSzn23BgK7mm1xkj3RoYmJiPZQ/exec";
-    const ADMIN_PASS = "Ppdbp007";
-    let isAdmin = false;
-    let rawData = [];
-    let currentTab = "Semua";
-
-    const CATATAN_OPTIONS = [
+    const CATATAN_OPTIONS_MURID = [
       "ID ke luar sekolah",
       "ID di sekolah",
-      "ID Murid",
       "ID guru",
+      "ID Murid",
       "Telah login",
       "Lain-lain"
     ];
 
-    document.addEventListener("DOMContentLoaded", () => {
-      fetchFromGoogleSheet();
-    });
+    const CATATAN_OPTIONS_GURU = [
+      "ID ke luar sekolah / Bertukar",
+      "ID di sekolah",
+      "ID Murid",
+      "ID guru",
+      "Bersara / Cuti Belajar",
+      "Telah login",
+      "Lain-lain"
+    ];
 
-    async function fetchFromGoogleSheet() {
-      const syncStatus = document.getElementById("syncStatus");
-      syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span> Mengemaskini dari Google Sheet...`;
-      
-      try {
-        const response = await fetch(SCRIPT_URL);
-        const json = await response.json();
-        
-        rawData = [];
-        
-        if (json.murid && json.murid.length > 1) {
-          json.murid.slice(1).forEach(row => {
-            if(row[0]) rawData.push(parseRowData(row, "Murid"));
-          });
-        }
-        
-        if (json.guru && json.guru.length > 1) {
-          json.guru.slice(1).forEach(row => {
-            if(row[0]) rawData.push(parseRowData(row, "Guru"));
-          });
-        }
+    // Konfigurasi Admin (Kata Laluan Rasmi PPD Batu Pahat)
+    let isAdmin = false;
+    const ADMIN_PASSCODE = "Ppdbp007";
 
-        populateSchoolFilter();
-        renderTable();
-        updateScorecards();
-        syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Dipertautkan ke Google Sheets`;
-      } catch (err) {
-        console.error(err);
-        syncStatus.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500"></span> Gagal berhubung dengan Google Sheet`;
+    let dataset = [];
+    let filteredDataset = [];
+    let selectedIds = new Set();
+    let currentRoleTab = "ALL";
+    let currentPage = 1;
+    let pageSize = 25;
+    let modalAction = null;
+
+    const DEMO_DATA = [
+      {
+        id: "rec-1",
+        peranan: "Murid",
+        email: "m-10293841@moe-dl.edu.my",
+        name: "MUHAMMAD AMIR BIN ZULKIFLI",
+        kodsekolah: "JBA0012",
+        namasekolah: "SK TEMENGGONG IBRAHIM",
+        jpn: "JOHOR",
+        ppd: "PPD BATU PAHAT",
+        status: "Belum Log Masuk",
+        catatan: "",
+        alasan: ""
+      },
+      {
+        id: "rec-2",
+        peranan: "Murid",
+        email: "m-10293842@moe-dl.edu.my",
+        name: "NUR ALISHA BINTI AHMAD FARID",
+        kodsekolah: "JBA0012",
+        namasekolah: "SK TEMENGGONG IBRAHIM",
+        jpn: "JOHOR",
+        ppd: "PPD BATU PAHAT",
+        status: "Belum Log Masuk",
+        catatan: "ID di sekolah",
+        alasan: ""
+      },
+      {
+        id: "rec-3",
+        peranan: "Guru",
+        email: "g-48291041@moe-dl.edu.my",
+        name: "CIKGU NORHAYATI BINTI OTHMAN",
+        kodsekolah: "JEA0010",
+        namasekolah: "SMK TINGGI BATU PAHAT",
+        jpn: "JOHOR",
+        ppd: "PPD BATU PAHAT",
+        status: "Belum Log Masuk",
+        catatan: "Bersara / Cuti Belajar",
+        alasan: ""
+      },
+      {
+        id: "rec-4",
+        peranan: "Guru",
+        email: "g-59381022@moe-dl.edu.my",
+        name: "EN. KHAIRUL ANUAR BIN HASSAN",
+        kodsekolah: "JEA0010",
+        namasekolah: "SMK TINGGI BATU PAHAT",
+        jpn: "JOHOR",
+        ppd: "PPD BATU PAHAT",
+        status: "Belum Log Masuk",
+        catatan: "",
+        alasan: ""
+      },
+      {
+        id: "rec-5",
+        peranan: "Murid",
+        email: "m-10293844@moe-dl.edu.my",
+        name: "SARANYA A/P SUBRAMANIAM",
+        kodsekolah: "JBD0051",
+        namasekolah: "SJKT LADANG BAN HENG",
+        jpn: "JOHOR",
+        ppd: "PPD BATU PAHAT",
+        status: "Belum Log Masuk",
+        catatan: "Lain-lain",
+        alasan: "Tiada capaian Internet di rumah"
+      },
+      {
+        id: "rec-6",
+        peranan: "Murid",
+        email: "m-10293846@moe-dl.edu.my",
+        name: "SITI NUR HALIZA BINTI BORHAN",
+        kodsekolah: "JBA0045",
+        namasekolah: "SK SERI MEDAN",
+        jpn: "JOHOR",
+        ppd: "PPD BATU PAHAT",
+        status: "Belum Log Masuk",
+        catatan: "ID guru",
+        alasan: ""
       }
+    ];
+
+    function showToast(message, type = "success") {
+      const toast = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMsg");
+      const toastIcon = document.getElementById("toastIcon");
+
+      toastMsg.innerText = message;
+      if (type === "success") {
+        toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-sm";
+      } else if (type === "info") {
+        toastIcon.className = "fa-solid fa-circle-info text-blue-400 text-sm";
+      } else {
+        toastIcon.className = "fa-solid fa-triangle-exclamation text-amber-400 text-sm";
+      }
+
+      toast.classList.remove("translate-y-16", "opacity-0");
+      toast.classList.add("translate-y-0", "opacity-100");
+
+      setTimeout(() => {
+        toast.classList.remove("translate-y-0", "opacity-100");
+        toast.classList.add("translate-y-16", "opacity-0");
+      }, 2500);
     }
 
-    function parseRowData(row, role) {
-      return {
-        email: row[0] || "",
-        nama: row[1] || "",
-        kodSekolah: row[2] || "",
-        namaSekolah: row[3] || "",
-        jpn: row[4] || "",
-        ppd: row[5] || "PPD BATU PAHAT",
-        status: row[6] || "Belum Log Masuk",
-        catatan: row[7] || "",
-        alasan: row[8] || "",
-        role: role
-      };
+    function openModal(title, message, onConfirm) {
+      document.getElementById("modalTitle").innerText = title;
+      document.getElementById("modalBody").innerText = message;
+      modalAction = onConfirm;
+      document.getElementById("customModal").classList.remove("hidden");
     }
 
-    function populateSchoolFilter() {
-      const select = document.getElementById("filterSchool");
-      select.innerHTML = '<option value="">Semua Sekolah (Batu Pahat)</option>';
-      
-      const schools = [...new Set(rawData.map(r => `${r.kodSekolah} - ${r.namaSekolah}`))].sort();
-      schools.forEach(sch => {
-        if(sch.trim() !== "-") {
-          const opt = document.createElement("option");
-          opt.value = sch;
-          opt.textContent = sch;
-          select.appendChild(opt);
-        }
-      });
+    function closeModal() {
+      document.getElementById("customModal").classList.add("hidden");
+      modalAction = null;
     }
 
-    function renderTable() {
-      const tbody = document.getElementById("tableBody");
-      tbody.innerHTML = "";
-
-      const filtered = getFilteredData();
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-gray-400">Tiada rekod dijumpai.</td></tr>`;
+    function parseCSVFile(file, roleHint = null) {
+      if (!isAdmin) {
+        showToast("Akses ditolak: Hanya Admin dibenarkan memuat naik fail CSV!", "warning");
+        openAdminModal();
         return;
       }
 
-      filtered.forEach((item, idx) => {
-        const tr = document.createElement("tr");
-        tr.className = "hover:bg-gray-50/80 transition border-b border-gray-100";
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function (results) {
+          if (!results.data || results.data.length === 0) {
+            showToast("Fail CSV kosong atau tidak sah!", "warning");
+            return;
+          }
 
-        const isCustom = item.catatan === "Lain-lain";
+          let detectedRole = roleHint;
+          if (!detectedRole) {
+            const fname = file.name.toLowerCase();
+            if (fname.includes("guru")) detectedRole = "Guru";
+            else if (fname.includes("murid")) detectedRole = "Murid";
+            else detectedRole = "Murid";
+          }
 
-        tr.innerHTML = `
-          <td class="p-3 text-center text-gray-400 font-mono text-[11px]">${idx + 1}</td>
-          <td class="p-3">
-            <span class="px-2 py-0.5 text-[10px] font-bold rounded-full ${item.role === 'Murid' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">
-              ${item.role}
-            </span>
-          </td>
-          <td class="p-3 font-semibold text-gray-900">${item.nama}</td>
-          <td class="p-3 font-mono text-gray-600">${item.email}</td>
-          <td class="p-3">
-            <div class="font-bold text-gray-800 text-[11px]">${item.kodSekolah}</div>
-            <div class="text-[10px] text-gray-500">${item.namaSekolah}</div>
-          </td>
-          <td class="p-3">
-            <span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-red-50 text-red-600 border border-red-100">
-              ${item.status}
-            </span>
-          </td>
-          <td class="p-3">
-            <select onchange="onCatatanChange('${item.email}', '${item.role}', this.value)" class="w-full border ${item.catatan ? 'border-indigo-400 bg-indigo-50/30' : 'border-gray-300'} rounded p-1.5 text-xs focus:ring-1 focus:ring-indigo-500">
-              <option value="">-- Pilih Catatan --</option>
-              ${CATATAN_OPTIONS.map(opt => `<option value="${opt}" ${item.catatan === opt ? 'selected' : ''}>${opt}</option>`).join('')}
-            </select>
-          </td>
-          <td class="p-3">
-            <input type="text" id="inputAlasan-${item.email}" value="${item.alasan || ''}" ${isCustom ? '' : 'disabled'} 
-              placeholder="${isCustom ? 'Nyatakan Alasan...' : '-'}"
-              onblur="onAlasanBlur('${item.email}', '${item.role}', this.value)"
-              class="w-full border border-gray-300 rounded p-1.5 text-xs ${isCustom ? 'bg-white' : 'bg-gray-100 text-gray-400'} focus:ring-1 focus:ring-indigo-500">
-          </td>
-        `;
-        tbody.appendChild(tr);
+          processRawRows(results.data, detectedRole, file.name);
+          showToast(`Berjaya memuatkan fail ${detectedRole} (${results.data.length} rekod).`, "success");
+        },
+        error: function (err) {
+          showToast("Ralat membaca fail: " + err.message, "warning");
+        }
       });
     }
 
-    function getFilteredData() {
-      const search = document.getElementById("searchInput").value.toLowerCase();
-      const school = document.getElementById("filterSchool").value;
-      const status = document.getElementById("filterStatus").value;
+    function normalizeHeaderKey(row, possibleKeys) {
+      for (const key of possibleKeys) {
+        if (row[key] !== undefined) return String(row[key]).trim();
+      }
+      return "";
+    }
 
-      return rawData.filter(r => {
-        const matchRole = currentTab === "Semua" || r.role === currentTab;
-        const matchSearch = r.nama.toLowerCase().includes(search) || r.email.toLowerCase().includes(search) || r.kodSekolah.toLowerCase().includes(search);
-        const matchSchool = !school || `${r.kodSekolah} - ${r.namaSekolah}` === school;
-        
-        let matchStatus = true;
-        if (status === "Selesai") matchStatus = !!r.catatan;
-        if (status === "Belum") matchStatus = !r.catatan;
+    function processRawRows(rawRows, roleName, fileName = "") {
+      let counter = dataset.length + 1;
+      let skippedOtherPpdCount = 0;
 
-        return matchRole && matchSearch && matchSchool && matchStatus;
+      // Filter and map ONLY records belonging to PPD Batu Pahat
+      const bpRawRows = rawRows.filter(row => {
+        const ppdVal = normalizeHeaderKey(row, ["ppd", "PPD", "Daerah"]).toUpperCase();
+        const schoolName = normalizeHeaderKey(row, ["namasekolah", "Nama Sekolah", "Sekolah"]).toUpperCase();
+        const isBatuPahat = ppdVal.includes("BATU PAHAT") || (!ppdVal && schoolName.includes("BATU PAHAT"));
+        if (!isBatuPahat) {
+          skippedOtherPpdCount++;
+          return false;
+        }
+        return true;
       });
+
+      const newItems = bpRawRows.map(row => {
+        const email = normalizeHeaderKey(row, ["email", "Email", "E-mel", "ID DELIMa", "ID", "emel"]);
+        const name = normalizeHeaderKey(row, ["name", "Name", "Nama Murid", "Nama Guru", "Nama", "NAMA", "nama"]);
+        const kodsekolah = normalizeHeaderKey(row, ["kodsekolah", "Kod Sekolah", "Kod", "kod"]);
+        const namasekolah = normalizeHeaderKey(row, ["namasekolah", "Nama Sekolah", "Sekolah"]);
+        const jpn = normalizeHeaderKey(row, ["jpn", "JPN", "Negeri"]);
+        const ppd = normalizeHeaderKey(row, ["ppd", "PPD", "Daerah"]) || "PPD BATU PAHAT";
+        const status = normalizeHeaderKey(row, ["status", "Status", "Status Murid", "Status Guru"]) || "Belum Log Masuk";
+        const catatan = normalizeHeaderKey(row, ["Catatan", "catatan", "CATATAN", "catatan_guru"]);
+        const alasan = normalizeHeaderKey(row, ["Nyatakan Alasan (Jika Lain-lain)", "alasan", "Alasan", "nyatakan_alasan"]);
+
+        let resolvedRole = roleName;
+        if (email.toLowerCase().startsWith("g-")) resolvedRole = "Guru";
+        else if (email.toLowerCase().startsWith("m-")) resolvedRole = "Murid";
+
+        return {
+          id: "rec-" + (counter++),
+          peranan: resolvedRole,
+          email,
+          name,
+          kodsekolah,
+          namasekolah,
+          jpn: jpn || "JOHOR",
+          ppd,
+          status,
+          catatan: catatan || "",
+          alasan: alasan || ""
+        };
+      });
+
+      const existingEmails = new Set(dataset.map(d => d.email.toLowerCase()));
+      const filteredNew = newItems.filter(item => !item.email || !existingEmails.has(item.email.toLowerCase()));
+
+      dataset = dataset.concat(filteredNew);
+
+      document.getElementById("fileNameDisplay").innerText = fileName || `Fail ${roleName} dimuatkan`;
+      populateFilterDropdowns();
+      applyFilters();
+      updateStats();
+
+      if (skippedOtherPpdCount > 0) {
+        showToast(`Dimuatkan: ${filteredNew.length} rekod PPD Batu Pahat (${skippedOtherPpdCount} rekod PPD lain disaring keluar).`, "info");
+      } else {
+        showToast(`Berjaya memuatkan ${filteredNew.length} rekod PPD Batu Pahat.`, "success");
+      }
+    }
+
+    function populateFilterDropdowns() {
+      const schoolSet = new Set();
+
+      // Collect only schools in Batu Pahat
+      dataset.forEach(d => {
+        const isBatuPahat = (d.ppd || "").toUpperCase().includes("BATU PAHAT");
+        if (isBatuPahat && d.kodsekolah) {
+          schoolSet.add(`${d.kodsekolah} - ${d.namasekolah || ''}`);
+        }
+      });
+
+      const filterSchool = document.getElementById("filterSchool");
+      const currentSelectedSchool = filterSchool.value;
+      filterSchool.innerHTML = '<option value="ALL">Semua Kod / Nama Sekolah (Batu Pahat)</option>';
+      
+      Array.from(schoolSet).sort().forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        opt.textContent = item;
+        filterSchool.appendChild(opt);
+      });
+
+      if (currentSelectedSchool && schoolSet.has(currentSelectedSchool)) {
+        filterSchool.value = currentSelectedSchool;
+      }
     }
 
     function applyFilters() {
+      const search = document.getElementById("searchInput").value.toLowerCase().trim();
+      const schoolVal = document.getElementById("filterSchool").value;
+      const statusVal = document.getElementById("filterStatus").value;
+
+      filteredDataset = dataset.filter(item => {
+        // Enforce Batu Pahat check strictly
+        const itemPpd = (item.ppd || "").toUpperCase();
+        if (!itemPpd.includes("BATU PAHAT")) return false;
+
+        if (currentRoleTab !== "ALL" && item.peranan.toUpperCase() !== currentRoleTab) {
+          return false;
+        }
+
+        const matchSearch = !search || 
+          (item.name && item.name.toLowerCase().includes(search)) ||
+          (item.email && item.email.toLowerCase().includes(search)) ||
+          (item.kodsekolah && item.kodsekolah.toLowerCase().includes(search)) ||
+          (item.namasekolah && item.namasekolah.toLowerCase().includes(search));
+
+        if (!matchSearch) return false;
+
+        if (schoolVal !== "ALL") {
+          const combined = `${item.kodsekolah} - ${item.namasekolah || ''}`;
+          if (combined !== schoolVal) return false;
+        }
+
+        if (statusVal === "EMPTY") {
+          if (item.catatan && item.catatan.trim() !== "") return false;
+        } else if (statusVal === "FILLED") {
+          if (!item.catatan || item.catatan.trim() === "") return false;
+        } else if (statusVal !== "ALL") {
+          if (item.catatan !== statusVal) return false;
+        }
+
+        return true;
+      });
+
+      currentPage = 1;
       renderTable();
+      updateStats();
     }
 
-    function switchTab(tab) {
-      currentTab = tab;
-      ["All", "Murid", "Guru"].forEach(t => {
-        const btn = document.getElementById(`tab${t}`);
-        if ((t === "All" && tab === "Semua") || t === tab) {
-          btn.className = "px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-gray-800 shadow-sm";
+    function updateStats() {
+      // Strictly calculate scorecard ONLY for PPD Batu Pahat records
+      const bpRecords = dataset.filter(d => (d.ppd || "").toUpperCase().includes("BATU PAHAT"));
+
+      const total = bpRecords.length;
+      const updated = bpRecords.filter(d => d.catatan && d.catatan.trim() !== "").length;
+      const pending = total - updated;
+      const totalMurid = bpRecords.filter(d => d.peranan === "Murid").length;
+      const totalGuru = bpRecords.filter(d => d.peranan === "Guru").length;
+      const loginLain = bpRecords.filter(d => d.catatan === "Telah login" || d.catatan === "Lain-lain").length;
+
+      document.getElementById("statTotal").innerText = total.toLocaleString();
+      document.getElementById("statUpdated").innerText = updated.toLocaleString();
+      document.getElementById("statPending").innerText = pending.toLocaleString();
+      document.getElementById("statTotalMurid").innerText = totalMurid.toLocaleString();
+      document.getElementById("statTotalGuru").innerText = totalGuru.toLocaleString();
+      document.getElementById("statLoginLain").innerText = loginLain.toLocaleString();
+
+      document.getElementById("countTabAll").innerText = total;
+      document.getElementById("countTabMurid").innerText = totalMurid;
+      document.getElementById("countTabGuru").innerText = totalGuru;
+
+      document.getElementById("selectedCount").innerText = selectedIds.size;
+      const btnBulk = document.getElementById("btnApplyBulk");
+      btnBulk.disabled = selectedIds.size === 0;
+    }
+
+    function renderTable() {
+      const tableBody = document.getElementById("tableBody");
+      const emptyState = document.getElementById("emptyState");
+
+      tableBody.innerHTML = "";
+
+      if (filteredDataset.length === 0) {
+        emptyState.classList.remove("hidden");
+        document.getElementById("pageStart").innerText = "0";
+        document.getElementById("pageEnd").innerText = "0";
+        document.getElementById("totalFilterRecords").innerText = "0";
+        document.getElementById("pageNumberDisplay").innerText = "0 / 0";
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+
+      const totalItems = filteredDataset.length;
+      const totalPages = Math.ceil(totalItems / pageSize) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, totalItems);
+      const pageItems = filteredDataset.slice(startIndex, endIndex);
+
+      document.getElementById("pageStart").innerText = startIndex + 1;
+      document.getElementById("pageEnd").innerText = endIndex;
+      document.getElementById("totalFilterRecords").innerText = totalItems;
+      document.getElementById("pageNumberDisplay").innerText = `${currentPage} / ${totalPages}`;
+
+      document.getElementById("btnPrevPage").disabled = currentPage <= 1;
+      document.getElementById("btnNextPage").disabled = currentPage >= totalPages;
+
+      pageItems.forEach((row, index) => {
+        const actualBil = startIndex + index + 1;
+        const isSelected = selectedIds.has(row.id);
+        const isLainLain = row.catatan === "Lain-lain";
+        const isGuru = row.peranan === "Guru";
+
+        const optionsList = isGuru ? CATATAN_OPTIONS_GURU : CATATAN_OPTIONS_MURID;
+
+        const tr = document.createElement("tr");
+        tr.className = `hover:bg-indigo-50/40 transition-colors ${isSelected ? 'bg-indigo-50/70' : ''}`;
+        tr.dataset.id = row.id;
+
+        let optionsHtml = `<option value="">-- Pilih Catatan --</option>`;
+        optionsList.forEach(opt => {
+          const selected = row.catatan === opt ? "selected" : "";
+          optionsHtml += `<option value="${opt}" ${selected}>${opt}</option>`;
+        });
+
+        const statusText = row.status || 'Belum Log Masuk';
+        const isBelumLog = statusText.toLowerCase().includes('belum');
+        const statusBadgeClass = isBelumLog
+          ? 'bg-rose-50 text-rose-700 border border-rose-200'
+          : 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+
+        const roleBadge = isGuru
+          ? '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800"><i class="fa-solid fa-chalkboard-user mr-1"></i>Guru</span>'
+          : '<span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-user-graduate mr-1"></i>Murid</span>';
+
+        tr.innerHTML = `
+          <td class="p-3 text-center">
+            <input type="checkbox" data-id="${row.id}" class="row-checkbox rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 h-4 w-4 cursor-pointer" ${isSelected ? 'checked' : ''}>
+          </td>
+          <td class="p-3 font-medium text-slate-500">${actualBil}</td>
+          <td class="p-3 whitespace-nowrap">${roleBadge}</td>
+          <td class="p-3 font-semibold text-slate-800">
+            <div class="truncate max-w-[200px]" title="${row.name}">${row.name || '-'}</div>
+          </td>
+          <td class="p-3 text-slate-600 font-mono text-[11px]">
+            <span class="bg-slate-100 px-2 py-0.5 rounded text-slate-700 select-all">${row.email || '-'}</span>
+          </td>
+          <td class="p-3">
+            <div class="font-medium text-slate-800">${row.kodsekolah || '-'}</div>
+            <div class="text-[11px] text-slate-500 truncate max-w-[170px]" title="${row.namasekolah}">${row.namasekolah || '-'}</div>
+          </td>
+          <td class="p-3 text-slate-600 whitespace-nowrap">
+            <span class="badge-pill bg-slate-100 text-slate-700">${row.ppd || '-'}</span>
+          </td>
+          <td class="p-3 text-center whitespace-nowrap">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium ${statusBadgeClass}">
+              <span class="w-1.5 h-1.5 rounded-full ${isBelumLog ? 'bg-rose-500' : 'bg-emerald-500'}"></span>
+              ${statusText}
+            </span>
+          </td>
+          <td class="p-3">
+            <select data-id="${row.id}" class="catatan-select w-full border ${row.catatan ? 'border-indigo-300 bg-indigo-50/40 font-medium text-indigo-900' : 'border-slate-300 bg-white text-slate-700'} rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all">
+              ${optionsHtml}
+            </select>
+          </td>
+          <td class="p-3">
+            <div class="relative">
+              <input type="text" data-id="${row.id}" 
+                placeholder="${isLainLain ? 'Taip alasan di sini...' : 'Hanya aktif jika Lain-lain'}" 
+                value="${row.alasan || ''}" 
+                class="alasan-input w-full border ${isLainLain ? 'border-amber-300 bg-amber-50/40 text-slate-800' : 'border-slate-200 bg-slate-100 text-slate-400 cursor-not-allowed'} rounded-lg px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-amber-400 focus:outline-none transition-all"
+                ${isLainLain ? '' : 'disabled'}>
+            </div>
+          </td>
+          <td class="p-3 text-center">
+            <button data-id="${row.id}" class="btn-clear text-slate-400 hover:text-rose-500 p-1 rounded transition-colors" title="Kosongkan Catatan">
+              <i class="fa-solid fa-rotate-left text-xs"></i>
+            </button>
+          </td>
+        `;
+
+        tableBody.appendChild(tr);
+      });
+
+      const allChecked = pageItems.length > 0 && pageItems.every(item => selectedIds.has(item.id));
+      document.getElementById("selectAllCheckbox").checked = allChecked;
+    }
+
+    document.getElementById("tableBody").addEventListener("change", function (e) {
+      if (e.target.classList.contains("catatan-select")) {
+        const id = e.target.getAttribute("data-id");
+        const val = e.target.value;
+        const item = dataset.find(d => d.id === id);
+        if (item) {
+          item.catatan = val;
+          const tr = e.target.closest("tr");
+          const alasanInput = tr.querySelector(".alasan-input");
+
+          if (val === "Lain-lain") {
+            alasanInput.disabled = false;
+            alasanInput.classList.remove("bg-slate-100", "text-slate-400", "border-slate-200", "cursor-not-allowed");
+            alasanInput.classList.add("bg-amber-50/40", "border-amber-300", "text-slate-800");
+            alasanInput.placeholder = "Taip alasan di sini...";
+            alasanInput.focus();
+          } else {
+            alasanInput.disabled = true;
+            alasanInput.classList.add("bg-slate-100", "text-slate-400", "border-slate-200", "cursor-not-allowed");
+            alasanInput.classList.remove("bg-amber-50/40", "border-amber-300", "text-slate-800");
+            alasanInput.placeholder = "Hanya aktif jika Lain-lain";
+          }
+
+          if (val) {
+            e.target.classList.add("border-indigo-300", "bg-indigo-50/40", "font-medium", "text-indigo-900");
+          } else {
+            e.target.classList.remove("border-indigo-300", "bg-indigo-50/40", "font-medium", "text-indigo-900");
+          }
+          updateStats();
+        }
+      }
+
+      if (e.target.classList.contains("row-checkbox")) {
+        const id = e.target.getAttribute("data-id");
+        if (e.target.checked) {
+          selectedIds.add(id);
         } else {
-          btn.className = "px-4 py-1.5 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900";
+          selectedIds.delete(id);
+        }
+        updateStats();
+        const tr = e.target.closest("tr");
+        if (e.target.checked) {
+          tr.classList.add("bg-indigo-50/70");
+        } else {
+          tr.classList.remove("bg-indigo-50/70");
+        }
+      }
+    });
+
+    document.getElementById("tableBody").addEventListener("input", function (e) {
+      if (e.target.classList.contains("alasan-input")) {
+        const id = e.target.getAttribute("data-id");
+        const item = dataset.find(d => d.id === id);
+        if (item) {
+          item.alasan = e.target.value;
+        }
+      }
+    });
+
+    document.getElementById("tableBody").addEventListener("click", function (e) {
+      const clearBtn = e.target.closest(".btn-clear");
+      if (clearBtn) {
+        const id = clearBtn.getAttribute("data-id");
+        const item = dataset.find(d => d.id === id);
+        if (item) {
+          item.catatan = "";
+          item.alasan = "";
+          renderTable();
+          updateStats();
+          showToast("Catatan dikosongkan.", "info");
+        }
+      }
+    });
+
+    document.getElementById("selectAllCheckbox").addEventListener("change", function (e) {
+      const startIndex = (currentPage - 1) * pageSize;
+      const endIndex = Math.min(startIndex + pageSize, filteredDataset.length);
+      const pageItems = filteredDataset.slice(startIndex, endIndex);
+
+      if (e.target.checked) {
+        pageItems.forEach(item => selectedIds.add(item.id));
+      } else {
+        pageItems.forEach(item => selectedIds.delete(item.id));
+      }
+      renderTable();
+      updateStats();
+    });
+
+    document.getElementById("btnApplyBulk").addEventListener("click", function () {
+      const bulkChoice = document.getElementById("bulkOptionSelect").value;
+      if (!bulkChoice) {
+        showToast("Sila pilih salah satu pilihan catatan terlebih dahulu!", "warning");
+        return;
+      }
+
+      openModal(
+        "Sahkan Kemaskini Pukal",
+        `Adakah anda pasti mahu menetapkan catatan '${bulkChoice}' kepada ${selectedIds.size} rekod yang dipilih?`,
+        () => {
+          dataset.forEach(item => {
+            if (selectedIds.has(item.id)) {
+              item.catatan = bulkChoice;
+              if (bulkChoice !== "Lain-lain") {
+                item.alasan = "";
+              }
+            }
+          });
+          selectedIds.clear();
+          renderTable();
+          updateStats();
+          closeModal();
+          showToast("Berjaya mengemaskini rekod terpilih!", "success");
+        }
+      );
+    });
+
+    document.getElementById("searchInput").addEventListener("input", applyFilters);
+    document.getElementById("filterSchool").addEventListener("change", applyFilters);
+    document.getElementById("filterStatus").addEventListener("change", applyFilters);
+
+    document.getElementById("pageSizeSelect").addEventListener("change", function (e) {
+      pageSize = parseInt(e.target.value);
+      currentPage = 1;
+      renderTable();
+    });
+
+    document.getElementById("btnPrevPage").addEventListener("click", function () {
+      if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+      }
+    });
+
+    document.getElementById("btnNextPage").addEventListener("click", function () {
+      const totalPages = Math.ceil(filteredDataset.length / pageSize) || 1;
+      if (currentPage < totalPages) {
+        currentPage++;
+        renderTable();
+      }
+    });
+
+    document.getElementById("csvMuridInput").addEventListener("change", function (e) {
+      if (!isAdmin) {
+        showToast("Akses ditolak: Hanya Admin dibenarkan memuat naik fail CSV!", "warning");
+        this.value = "";
+        openAdminModal();
+        return;
+      }
+      if (e.target.files[0]) parseCSVFile(e.target.files[0], "Murid");
+    });
+
+    document.getElementById("csvGuruInput").addEventListener("change", function (e) {
+      if (!isAdmin) {
+        showToast("Akses ditolak: Hanya Admin dibenarkan memuat naik fail CSV!", "warning");
+        this.value = "";
+        openAdminModal();
+        return;
+      }
+      if (e.target.files[0]) parseCSVFile(e.target.files[0], "Guru");
+    });
+
+    function setRoleTab(tab) {
+      currentRoleTab = tab;
+      const tabs = {
+        ALL: document.getElementById("tabRoleAll"),
+        MURID: document.getElementById("tabRoleMurid"),
+        GURU: document.getElementById("tabRoleGuru")
+      };
+
+      Object.keys(tabs).forEach(k => {
+        if (k === tab) {
+          tabs[k].className = "role-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-white text-indigo-900 shadow-xs transition-all";
+        } else {
+          tabs[k].className = "role-tab px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition-all";
         }
       });
-      renderTable();
+
+      selectedIds.clear();
+      applyFilters();
     }
 
-    async function onCatatanChange(email, role, value) {
-      const item = rawData.find(r => r.email === email && r.role === role);
-      if (!item) return;
+    document.getElementById("tabRoleAll").addEventListener("click", () => setRoleTab("ALL"));
+    document.getElementById("tabRoleMurid").addEventListener("click", () => setRoleTab("MURID"));
+    document.getElementById("tabRoleGuru").addEventListener("click", () => setRoleTab("GURU"));
 
-      item.catatan = value;
-      if (value !== "Lain-lain") {
-        item.alasan = "";
+    document.getElementById("btnLoadDemo").addEventListener("click", function () {
+      dataset = JSON.parse(JSON.stringify(DEMO_DATA));
+      document.getElementById("fileNameDisplay").innerText = "Data Demo (Batu Pahat)";
+      populateFilterDropdowns();
+      setRoleTab("ALL");
+      showToast("Data demo Batu Pahat berjaya dimuatkan!", "success");
+    });
+
+    const btnExportMenu = document.getElementById("btnExportMenu");
+    const exportDropdown = document.getElementById("exportDropdown");
+
+    btnExportMenu.addEventListener("click", function (e) {
+      e.stopPropagation();
+      exportDropdown.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", function () {
+      if (!exportDropdown.classList.contains("hidden")) {
+        exportDropdown.classList.add("hidden");
       }
+    });
 
-      renderTable();
-      updateScorecards();
+    function updateAdminUI() {
+      const adminExportContainer = document.getElementById("adminExportContainer");
+      const userLockedExportContainer = document.getElementById("userLockedExportContainer");
+      const adminUploadContainer = document.getElementById("adminUploadContainer");
+      const userLockedUploadContainer = document.getElementById("userLockedUploadContainer");
+      const btnAdminToggle = document.getElementById("btnAdminToggle");
+      const adminToggleIcon = document.getElementById("adminToggleIcon");
+      const adminToggleText = document.getElementById("adminToggleText");
 
-      // Send to Google Sheet
-      await updateToGoogleSheet(email, role, item.catatan, item.alasan);
-    }
+      if (isAdmin) {
+        // Papar fungsi eksport & import Admin
+        adminExportContainer.classList.remove("hidden");
+        userLockedExportContainer.classList.add("hidden");
+        adminUploadContainer.classList.remove("hidden");
+        userLockedUploadContainer.classList.add("hidden");
 
-    async function onAlasanBlur(email, role, value) {
-      const item = rawData.find(r => r.email === email && r.role === role);
-      if (!item || item.alasan === value) return;
-
-      item.alasan = value;
-      await updateToGoogleSheet(email, role, item.catatan, item.alasan);
-    }
-
-    async function updateToGoogleSheet(email, role, catatan, alasan) {
-      try {
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify({
-            action: "updateRow",
-            role: role,
-            email: email,
-            catatan: catatan,
-            alasan: alasan
-          })
-        });
-      } catch (e) {
-        console.error("Gagal kemaskini ke Google Sheets:", e);
-      }
-    }
-
-    function updateScorecards() {
-      const total = rawData.length;
-      const completed = rawData.filter(r => !!r.catatan).length;
-      const pending = total - completed;
-      const muridCount = rawData.filter(r => r.role === "Murid").length;
-      const guruCount = rawData.filter(r => r.role === "Guru").length;
-      const otherCount = rawData.filter(r => r.catatan === "Telah login" || r.catatan === "Lain-lain").length;
-
-      document.getElementById("statTotal").textContent = total;
-      document.getElementById("statCompleted").textContent = completed;
-      document.getElementById("statPending").textContent = pending;
-      document.getElementById("statMurid").textContent = muridCount;
-      document.getElementById("statGuru").textContent = guruCount;
-      document.getElementById("statOther").textContent = otherCount;
-
-      document.getElementById("cntAll").textContent = total;
-      document.getElementById("cntMurid").textContent = muridCount;
-      document.getElementById("cntGuru").textContent = guruCount;
-    }
-
-    function toggleAdminModal() {
-      const modal = document.getElementById("adminModal");
-      modal.classList.toggle("hidden");
-    }
-
-    function verifyAdmin() {
-      const pass = document.getElementById("adminPassword").value;
-      if (pass === ADMIN_PASS) {
-        isAdmin = true;
-        document.getElementById("adminPanel").classList.remove("hidden");
-        document.getElementById("adminBtnText").textContent = "Log Keluar Admin";
-        document.getElementById("adminIcon").className = "fa-solid fa-unlock";
-        toggleAdminModal();
+        btnAdminToggle.className = "px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs rounded-lg transition-colors flex items-center gap-1.5 shadow-sm";
+        adminToggleIcon.className = "fa-solid fa-shield-check";
+        adminToggleText.innerText = "Admin Aktif (Keluar)";
       } else {
-        alert("Kata laluan Admin salah!");
+        // Kunci fungsi eksport & import untuk pengguna biasa
+        adminExportContainer.classList.add("hidden");
+        userLockedExportContainer.classList.remove("hidden");
+        adminUploadContainer.classList.add("hidden");
+        userLockedUploadContainer.classList.remove("hidden");
+
+        btnAdminToggle.className = "px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-400/40 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 shadow-sm";
+        adminToggleIcon.className = "fa-solid fa-lock";
+        adminToggleText.innerText = "Log Masuk Admin";
       }
     }
 
-    function handleFileUpload(event, role) {
-      if (!isAdmin) return;
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = async function(e) {
-        const text = e.target.result;
-        alert(`Fail ${role} berjaya dibaca! Menghantar ke Google Sheets...`);
-        // Process & Refresh
-      };
-      reader.readAsText(file);
+    function openAdminModal() {
+      const modal = document.getElementById("adminLoginModal");
+      const input = document.getElementById("adminPinInput");
+      const errorMsg = document.getElementById("adminErrorMsg");
+      input.value = "";
+      errorMsg.classList.add("hidden");
+      modal.classList.remove("hidden");
+      setTimeout(() => input.focus(), 100);
     }
 
-    function downloadCSV() {
-      if (!isAdmin) return;
-      let csvContent = "data:text/csv;charset=utf-8,PERANAN,NAMA,EMAIL,KOD SEKOLAH,SEKOLAH,STATUS,CATATAN,NYATAKAN ALASAN\n";
-      
-      rawData.forEach(r => {
-        csvContent += `"${r.role}","${r.nama}","${r.email}","${r.kodSekolah}","${r.namaSekolah}","${r.status}","${r.catatan}","${r.alasan}"\n`;
-      });
-
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Kemaskini_DELIMa_PPD_Batu_Pahat.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    function closeAdminModal() {
+      document.getElementById("adminLoginModal").classList.add("hidden");
     }
+
+    document.getElementById("btnAdminToggle").addEventListener("click", function () {
+      if (isAdmin) {
+        openModal("Log Keluar Admin", "Adakah anda ingin keluar dari mod Admin? Butang muat turun akan dikunci semula.", () => {
+          isAdmin = false;
+          updateAdminUI();
+          closeModal();
+          showToast("Telah log keluar daripada mod Admin. Fungsi muat turun kini dikunci.", "info");
+        });
+      } else {
+        openAdminModal();
+      }
+    });
+
+    document.getElementById("btnLockedNotice").addEventListener("click", function () {
+      openAdminModal();
+    });
+
+    document.getElementById("btnLockedUploadNotice").addEventListener("click", function () {
+      openAdminModal();
+    });
+
+    document.getElementById("adminLoginCancel").addEventListener("click", closeAdminModal);
+
+    document.getElementById("adminLoginSubmit").addEventListener("click", function () {
+      const pin = document.getElementById("adminPinInput").value.trim();
+      const errorMsg = document.getElementById("adminErrorMsg");
+
+      if (pin === ADMIN_PASSCODE) {
+        isAdmin = true;
+        updateAdminUI();
+        closeAdminModal();
+        showToast("Pengesahan Admin berjaya! Butang Muat Turun CSV telah diaktifkan.", "success");
+      } else {
+        errorMsg.classList.remove("hidden");
+      }
+    });
+
+    document.getElementById("adminPinInput").addEventListener("keydown", function (e) {
+      if (e.key === "Enter") {
+        document.getElementById("adminLoginSubmit").click();
+      }
+    });
+
+    document.getElementById("btnTogglePinEye").addEventListener("click", function () {
+      const input = document.getElementById("adminPinInput");
+      const icon = this.querySelector("i");
+      if (input.type === "password") {
+        input.type = "text";
+        icon.className = "fa-regular fa-eye-slash text-xs";
+      } else {
+        input.type = "password";
+        icon.className = "fa-regular fa-eye text-xs";
+      }
+    });
+
+    function downloadCSV(dataToExport, filename) {
+      if (!isAdmin) {
+        showToast("Akses ditolak: Hanya Admin dibenarkan memuat turun fail CSV!", "warning");
+        openAdminModal();
+        return;
+      }
+
+      if (dataToExport.length === 0) {
+        showToast("Tiada rekod untuk dieksport!", "warning");
+        return;
+      }
+
+      const formatted = dataToExport.map(row => ({
+        "Peranan": row.peranan,
+        "email": row.email,
+        "name": row.name,
+        "kodsekolah": row.kodsekolah,
+        "namasekolah": row.namasekolah,
+        "jpn": row.jpn,
+        "ppd": row.ppd,
+        "status": row.status,
+        "Catatan": row.catatan,
+        "Nyatakan Alasan (Jika Lain-lain)": row.alasan
+      }));
+
+      const csvString = Papa.unparse(formatted);
+      const blob = new Blob(["\uFEFF" + csvString], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast(`Fail CSV berjaya dimuat turun (${dataToExport.length} rekod).`, "success");
+    }
+
+    document.getElementById("btnExportActive").addEventListener("click", function () {
+      const today = new Date().toISOString().slice(0, 10);
+      downloadCSV(filteredDataset, `delima-batu-pahat-${currentRoleTab.toLowerCase()}-${today}.csv`);
+    });
+
+    document.getElementById("btnExportMurid").addEventListener("click", function () {
+      const today = new Date().toISOString().slice(0, 10);
+      const muridData = dataset.filter(d => d.peranan === "Murid" && (d.ppd || "").toUpperCase().includes("BATU PAHAT"));
+      downloadCSV(muridData, `murid-batu-pahat-dikemaskini-${today}.csv`);
+    });
+
+    document.getElementById("btnExportGuru").addEventListener("click", function () {
+      const today = new Date().toISOString().slice(0, 10);
+      const guruData = dataset.filter(d => d.peranan === "Guru" && (d.ppd || "").toUpperCase().includes("BATU PAHAT"));
+      downloadCSV(guruData, `guru-batu-pahat-dikemaskini-${today}.csv`);
+    });
+
+    document.getElementById("btnExportAll").addEventListener("click", function () {
+      const today = new Date().toISOString().slice(0, 10);
+      downloadCSV(dataset, `semua-batu-pahat-delima-dikemaskini-${today}.csv`);
+    });
+
+    document.getElementById("modalBtnCancel").addEventListener("click", closeModal);
+    document.getElementById("modalBtnConfirm").addEventListener("click", function () {
+      if (typeof modalAction === "function") {
+        modalAction();
+      }
+    });
+
+    window.addEventListener("DOMContentLoaded", function () {
+      dataset = JSON.parse(JSON.stringify(DEMO_DATA));
+      document.getElementById("fileNameDisplay").innerText = "Data PPD Batu Pahat Sedia Digunakan";
+      document.getElementById("filterPPD").value = "BATU PAHAT";
+      updateAdminUI();
+      populateFilterDropdowns();
+      applyFilters();
+      updateStats();
+    });
   </script>
 </body>
 </html>
