@@ -31,9 +31,6 @@
         <button id="btnRefresh" onclick="fetchFromGoogleSheet(1)" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow">
           <i class="fa-solid fa-rotate"></i> 🔄 Muat Semula Data
         </button>
-        <button id="btnAdminToggle" onclick="toggleAdminModal()" class="bg-yellow-500 hover:bg-yellow-600 text-gray-900 text-xs px-3 py-2 rounded-lg font-bold transition flex items-center gap-1.5 shadow">
-          <i class="fa-solid fa-lock" id="adminIcon"></i> <span id="adminBtnText">Log Masuk Admin</span>
-        </button>
       </div>
     </div>
   </header>
@@ -65,20 +62,6 @@
       <div class="bg-white p-4 rounded-xl shadow-sm border-gray-200">
         <div class="text-xs font-semibold text-gray-500 uppercase">Halaman</div>
         <div class="text-2xl font-bold text-indigo-600 mt-1" id="statPage">1 / 1</div>
-      </div>
-    </div>
-
-    <!-- Admin Panel -->
-    <div id="adminPanel" class="hidden bg-yellow-50 border border-yellow-200 p-4 rounded-xl space-y-3">
-      <div class="flex justify-between items-center">
-        <h3 class="text-sm font-bold text-yellow-900 flex items-center gap-2">
-          <i class="fa-solid fa-user-shield text-yellow-700"></i> Panel Kawalan Pentadbir (Admin)
-        </h3>
-      </div>
-      <div class="flex justify-end">
-        <button onclick="downloadCSV()" class="bg-gray-800 hover:bg-gray-900 text-white text-xs px-4 py-2 rounded-lg font-medium transition flex items-center gap-1.5 shadow">
-          <i class="fa-solid fa-download"></i> Muat Turun Data CSV
-        </button>
       </div>
     </div>
 
@@ -148,25 +131,9 @@
 
   </main>
 
-  <!-- Admin Modal -->
-  <div id="adminModal" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
-    <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl space-y-4">
-      <div class="flex justify-between items-center">
-        <h3 class="font-bold text-gray-900 text-base">Log Masuk Admin</h3>
-        <button onclick="toggleAdminModal()" class="text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <input type="password" id="adminPassword" placeholder="Masukkan Kata Laluan Admin" class="w-full border border-gray-300 p-2.5 rounded-lg text-xs focus:ring-2 focus:ring-yellow-500 focus:outline-none">
-      <div class="flex justify-end gap-2">
-        <button onclick="toggleAdminModal()" class="px-3 py-2 text-xs text-gray-600">Batal</button>
-        <button onclick="verifyAdmin()" class="px-4 py-2 text-xs font-bold bg-yellow-500 hover:bg-yellow-600 text-gray-900 rounded-lg">Log Masuk</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzTOXSyM_iOgs57wUJcbsOixOqWMp3tSTc6jqHNnqhBKfQc2Z9RF8tWQbRPpP4z1TgBCA/exec";
-    const ADMIN_PASS = "Ppdbp007";
-    let isAdmin = false;
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpshkYlIOZuzLOe1pvT5vhxKfG6tjZyRK0qrUeeAmlCSzn23BgK7mm1xkj3RoYmJiPZQ/exec";
+    
     let rawData = [];
     let currentPage = 1;
     let totalPages = 1;
@@ -192,7 +159,7 @@
             select.appendChild(opt);
           });
         }
-      } catch (e) { console.error("Gagal muat senarai sekolah", e); }
+      } catch (e) { console.error("Gagal muat sekolah", e); }
     }
 
     async function fetchFromGoogleSheet(page = 1) {
@@ -340,30 +307,6 @@
           body: JSON.stringify({ action: "updateRow", role: role, email: email, catatan: catatan, alasan: alasan })
         });
       } catch (e) { console.error("Gagal kemaskini:", e); }
-    }
-
-    function toggleAdminModal() { document.getElementById("adminModal").classList.toggle("hidden"); }
-
-    function verifyAdmin() {
-      if (document.getElementById("adminPassword").value === ADMIN_PASS) {
-        isAdmin = true;
-        document.getElementById("adminPanel").classList.remove("hidden");
-        document.getElementById("adminBtnText").textContent = "Log Keluar Admin";
-        toggleAdminModal();
-      } else { alert("Kata laluan Admin salah!"); }
-    }
-
-    function downloadCSV() {
-      if (!isAdmin) return;
-      let csvContent = "data:text/csv;charset=utf-8,PERANAN,NAMA,EMAIL,KOD SEKOLAH,SEKOLAH,STATUS,CATATAN,NYATAKAN ALASAN\n";
-      rawData.forEach(r => { csvContent += `"${r.role}","${r.nama}","${r.email}","${r.kodSekolah}","${r.namaSekolah}","${r.status}","${r.catatan}","${r.alasan}"\n`; });
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement("a");
-      link.setAttribute("href", encodedUri);
-      link.setAttribute("download", `Kemaskini_DELIMa_PPD_Batu_Pahat.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
     }
   </script>
 </body>
