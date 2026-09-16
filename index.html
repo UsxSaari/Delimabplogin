@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal Pengemaskinian DELIMa PPD Batu Pahat</title>
+  <title>Log Masuk Portal DELIMa PPD Batu Pahat</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -15,51 +15,58 @@
 
   <!-- Header -->
   <header class="bg-custom-dark text-white shadow-lg sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
       <div class="flex items-center space-x-3">
-        <div class="bg-yellow-500 text-gray-900 font-extrabold px-3 py-1 rounded text-xs uppercase tracking-wider">
+        <div class="bg-yellow-500 text-gray-900 font-extrabold px-3 py-1 rounded text-xs uppercase">
           PPD Batu Pahat
         </div>
         <div>
-          <h1 class="text-xl font-bold tracking-tight">Sistem Pengemaskinian Catatan DELIMa</h1>
-          <p class="text-xs text-gray-300">Semakan & Verifikasi Log Masuk DELIMa KPM</p>
+          <h1 class="text-xl font-bold">Sistem Catatan Log Masuk DELIMa</h1>
         </div>
       </div>
-      <div class="flex items-center space-x-2">
-        <span id="activeSchoolBadge" class="hidden bg-emerald-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold"></span>
-      </div>
+      <button id="btnLogout" onclick="logout()" class="hidden bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5">
+        <i class="fa-solid fa-right-from-bracket"></i> Log Keluar
+      </button>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
+  <main class="max-w-7xl mx-auto px-4 py-8">
 
-    <!-- Section 1: Pemilihan Sekolah Required -->
-    <div id="schoolSelectorCard" class="bg-white p-6 rounded-xl shadow-md border border-indigo-100 text-center space-y-4">
-      <div class="max-w-xl mx-auto space-y-2">
-        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-xl">
-          <i class="fa-solid fa-school"></i>
+    <!-- Screen 1: Log Masuk -->
+    <div id="loginScreen" class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-100 space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+          <i class="fa-solid fa-user-lock"></i>
         </div>
-        <h2 class="text-lg font-bold text-gray-900">Sila Pilih Sekolah Anda</h2>
-        <p class="text-xs text-gray-500">Pilih sekolah anda daripada senarai di bawah untuk memuatkan rekod Guru dan Murid secara khusus.</p>
-        
-        <div class="flex gap-2 pt-2">
-          <select id="selectSchoolPortal" class="w-full text-xs border border-gray-300 rounded-lg p-3 font-medium focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            <option value="">-- Memuatkan Senarai Sekolah... --</option>
-          </select>
-          <button onclick="loadSelectedSchoolData()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-5 py-3 rounded-lg font-bold transition flex items-center gap-2 whitespace-nowrap shadow">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i> Buka Rekod
-          </button>
+        <h2 class="text-xl font-bold text-gray-900">Log Masuk Sekolah</h2>
+        <p class="text-xs text-gray-500">Masukkan Kod Sekolah anda untuk mengakses data (Contoh: JBA0081)</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-700 uppercase mb-1">Kod Sekolah</label>
+          <input type="text" id="inputKodSekolah" placeholder="Contoh: JBA0081" class="w-full text-sm font-mono uppercase tracking-wider border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
         </div>
+        <button onclick="doLogin()" id="btnLogin" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm py-3 rounded-lg transition shadow flex items-center justify-center gap-2">
+          <i class="fa-solid fa-right-to-bracket"></i> Log Masuk
+        </button>
       </div>
     </div>
 
-    <!-- Section 2: Dashboard Data (Hidden Until School Selected) -->
-    <div id="dataDashboard" class="hidden space-y-6">
+    <!-- Screen 2: Dashboard Rekod Sekolah -->
+    <div id="dashboardScreen" class="hidden space-y-6">
+      
+      <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-lg flex justify-between items-center">
+        <div>
+          <span class="bg-yellow-500 text-gray-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded uppercase" id="badgeKod"></span>
+          <h2 class="text-2xl font-bold mt-1" id="titleNamaSekolah"></h2>
+        </div>
+      </div>
 
       <!-- Scorecards -->
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
-          <div class="text-xs font-semibold text-gray-500 uppercase">Jumlah Rekod Sekolah</div>
+          <div class="text-xs font-semibold text-gray-500 uppercase">Jumlah Rekod</div>
           <div class="text-2xl font-bold text-gray-900 mt-1" id="statTotal">0</div>
         </div>
         <div class="bg-white p-4 rounded-xl shadow-sm border-l-4 border-emerald-500 border-gray-200">
@@ -80,48 +87,32 @@
         </div>
       </div>
 
-      <!-- Filters & Actions -->
-      <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-200 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b pb-4 border-gray-100">
+      <!-- Filters & Table -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden space-y-4 p-4">
+        <div class="flex justify-between items-center border-b pb-4 gap-4">
           <div class="flex bg-gray-100 p-1 rounded-lg">
-            <button id="tabAll" onclick="switchTab('Semua')" class="px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-gray-800 shadow-sm">Semua (<span id="cntAll">0</span>)</button>
-            <button id="tabMurid" onclick="switchTab('Murid')" class="px-4 py-1.5 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900">Murid (<span id="cntMurid">0</span>)</button>
-            <button id="tabGuru" onclick="switchTab('Guru')" class="px-4 py-1.5 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900">Guru (<span id="cntGuru">0</span>)</button>
+            <button id="tabAll" onclick="switchTab('Semua')" class="px-4 py-1.5 rounded-md text-xs font-semibold bg-white text-gray-800 shadow-sm">Semua</button>
+            <button id="tabMurid" onclick="switchTab('Murid')" class="px-4 py-1.5 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900">Murid</button>
+            <button id="tabGuru" onclick="switchTab('Guru')" class="px-4 py-1.5 rounded-md text-xs font-semibold text-gray-600 hover:text-gray-900">Guru</button>
           </div>
-          <div id="syncStatus" class="text-xs text-gray-500 flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Data Sekolah Dimuatkan
-          </div>
+          <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Carian Nama / E-mel..." class="px-3 py-2 text-xs border border-gray-300 rounded-lg w-64">
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <input type="text" id="searchInput" onkeyup="renderTable()" placeholder="Carian Nama atau E-mel DELIMa..." class="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-          <select id="filterStatus" onchange="renderTable()" class="w-full text-xs border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option value="">Semua Status Catatan</option>
-            <option value="Selesai">Telah Dikemaskini</option>
-            <option value="Belum">Belum Dikemaskini</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Table -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-gray-50 text-gray-600 text-[11px] uppercase tracking-wider border-b border-gray-200">
-                <th class="p-3 font-bold w-12 text-center">Bil</th>
-                <th class="p-3 font-bold w-20">Peranan</th>
-                <th class="p-3 font-bold">Nama Pengguna</th>
-                <th class="p-3 font-bold">E-mel DELIMa</th>
-                <th class="p-3 font-bold">Status Log Masuk</th>
-                <th class="p-3 font-bold min-w-[180px]">Catatan (Dropdown)</th>
-                <th class="p-3 font-bold min-w-[180px]">Alasan (Jika Lain-lain)</th>
-                <th class="p-3 font-bold w-28 text-center">Tindakan</th>
+              <tr class="bg-gray-50 text-gray-600 text-[11px] uppercase border-b border-gray-200">
+                <th class="p-3 w-12 text-center">Bil</th>
+                <th class="p-3 w-20">Peranan</th>
+                <th class="p-3">Nama Pengguna</th>
+                <th class="p-3">E-mel DELIMa</th>
+                <th class="p-3">Status</th>
+                <th class="p-3 min-w-[180px]">Catatan</th>
+                <th class="p-3 min-w-[180px]">Alasan</th>
+                <th class="p-3 text-center">Tindakan</th>
               </tr>
             </thead>
-            <tbody id="tableBody" class="divide-y divide-gray-100 text-xs text-gray-700">
-              <!-- Rows injected via JavaScript -->
-            </tbody>
+            <tbody id="tableBody" class="divide-y divide-gray-100 text-xs text-gray-700"></tbody>
           </table>
         </div>
       </div>
@@ -135,67 +126,48 @@
     
     let schoolMasterData = [];
     let currentTab = "Semua";
-    let selectedKodSekolah = "";
-
     const CATATAN_OPTIONS = ["ID ke luar sekolah", "ID di sekolah", "ID Murid", "ID guru", "Telah login", "Lain-lain"];
 
-    document.addEventListener("DOMContentLoaded", fetchSchoolList);
+    async function doLogin() {
+      const kod = document.getElementById("inputKodSekolah").value.trim().toUpperCase();
+      if (!kod) return alert("Sila masukkan Kod Sekolah!");
 
-    async function fetchSchoolList() {
+      const btn = document.getElementById("btnLogin");
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Memeriksa...`;
+
       try {
-        const res = await fetch(`${SCRIPT_URL}?action=getSchools`);
+        const res = await fetch(`${SCRIPT_URL}?action=login&kodSekolah=${encodeURIComponent(kod)}`);
         const json = await res.json();
-        const select = document.getElementById("selectSchoolPortal");
-        
-        if (json.schools && json.schools.length > 0) {
-          select.innerHTML = '<option value="">-- Pilih Sekolah Daripada Senarai --</option>';
-          json.schools.forEach(sch => {
-            const opt = document.createElement("option");
-            opt.value = sch;
-            opt.textContent = sch;
-            select.appendChild(opt);
-          });
+
+        if (json.status === "success") {
+          schoolMasterData = json.data;
+          document.getElementById("badgeKod").textContent = json.kodSekolah;
+          document.getElementById("titleNamaSekolah").textContent = json.namaSekolah;
+
+          document.getElementById("loginScreen").classList.add("hidden");
+          document.getElementById("dashboardScreen").classList.remove("hidden");
+          document.getElementById("btnLogout").classList.remove("hidden");
+
+          updateScorecards();
+          renderTable();
+        } else {
+          alert(json.message || "Kod Sekolah tidak dijumpai.");
         }
       } catch (e) {
-        alert("Gagal memuatkan senarai sekolah. Sila cuba semula.");
+        alert("Ralat sambungan.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Log Masuk`;
       }
     }
 
-    async function loadSelectedSchoolData() {
-      const schoolVal = document.getElementById("selectSchoolPortal").value;
-      if (!schoolVal) {
-        alert("Sila pilih sekolah terlebih dahulu!");
-        return;
-      }
-
-      selectedKodSekolah = schoolVal.split(" - ")[0].trim();
-      const syncStatus = document.getElementById("syncStatus");
-      
-      document.getElementById("schoolSelectorCard").classList.add("opacity-50", "pointer-events-none");
-
-      try {
-        const url = `${SCRIPT_URL}?kodSekolah=${encodeURIComponent(selectedKodSekolah)}`;
-        const response = await fetch(url);
-        const json = await response.json();
-
-        if (json.status === "success") {
-          schoolMasterData = json.data || [];
-          
-          document.getElementById("activeSchoolBadge").textContent = schoolVal;
-          document.getElementById("activeSchoolBadge").classList.remove("hidden");
-          document.getElementById("schoolSelectorCard").classList.add("hidden");
-          document.getElementById("dataDashboard").classList.remove("hidden");
-
-          updateScorecards(json);
-          renderTable();
-        } else {
-          alert("Tiada rekod dijumpai bagi sekolah ini.");
-        }
-      } catch (err) {
-        alert("Ralat sambungan ke pelayan.");
-      } finally {
-        document.getElementById("schoolSelectorCard").classList.remove("opacity-50", "pointer-events-none");
-      }
+    function logout() {
+      schoolMasterData = [];
+      document.getElementById("inputKodSekolah").value = "";
+      document.getElementById("loginScreen").classList.remove("hidden");
+      document.getElementById("dashboardScreen").classList.add("hidden");
+      document.getElementById("btnLogout").classList.add("hidden");
     }
 
     function renderTable() {
@@ -203,16 +175,10 @@
       tbody.innerHTML = "";
 
       const search = document.getElementById("searchInput").value.toLowerCase();
-      const statusFilter = document.getElementById("filterStatus").value;
-
       const filtered = schoolMasterData.filter(r => {
         const matchRole = currentTab === "Semua" || r.role === currentTab;
         const matchSearch = !search || r.nama.toLowerCase().includes(search) || r.email.toLowerCase().includes(search);
-        let matchStatus = true;
-        if (statusFilter === "Selesai") matchStatus = !!r.catatan;
-        if (statusFilter === "Belum") matchStatus = !r.catatan;
-
-        return matchRole && matchSearch && matchStatus;
+        return matchRole && matchSearch;
       });
 
       if (filtered.length === 0) {
@@ -222,12 +188,12 @@
 
       filtered.forEach((item, idx) => {
         const tr = document.createElement("tr");
-        tr.className = "hover:bg-gray-50/80 transition border-b border-gray-100";
+        tr.className = "hover:bg-gray-50 transition border-b border-gray-100";
         const isCustom = item.catatan === "Lain-lain";
         const rowId = `row-${item.role}-${idx}`;
 
         tr.innerHTML = `
-          <td class="p-3 text-center text-gray-400 font-mono text-[11px]">${idx + 1}</td>
+          <td class="p-3 text-center text-gray-400 font-mono">${idx + 1}</td>
           <td class="p-3">
             <span class="px-2 py-0.5 text-[10px] font-bold rounded-full ${item.role === 'Murid' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">
               ${item.role}
@@ -235,21 +201,15 @@
           </td>
           <td class="p-3 font-semibold text-gray-900">${item.nama}</td>
           <td class="p-3 font-mono text-gray-600">${item.email}</td>
+          <td class="p-3"><span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-red-50 text-red-600 border border-red-100">${item.status}</span></td>
           <td class="p-3">
-            <span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-red-50 text-red-600 border border-red-100">
-              ${item.status}
-            </span>
-          </td>
-          <td class="p-3">
-            <select id="selectCatatan-${rowId}" onchange="toggleAlasanField('${rowId}')" class="w-full border ${item.catatan ? 'border-indigo-400 bg-indigo-50/30' : 'border-gray-300'} rounded p-1.5 text-xs focus:ring-1 focus:ring-indigo-500">
+            <select id="selectCatatan-${rowId}" onchange="toggleAlasanField('${rowId}')" class="w-full border rounded p-1.5 text-xs">
               <option value="">-- Pilih Catatan --</option>
               ${CATATAN_OPTIONS.map(opt => `<option value="${opt}" ${item.catatan === opt ? 'selected' : ''}>${opt}</option>`).join('')}
             </select>
           </td>
           <td class="p-3">
-            <input type="text" id="inputAlasan-${rowId}" value="${item.alasan || ''}" ${isCustom ? '' : 'disabled'} 
-              placeholder="${isCustom ? 'Nyatakan Alasan...' : '-'}"
-              class="w-full border border-gray-300 rounded p-1.5 text-xs ${isCustom ? 'bg-white' : 'bg-gray-100 text-gray-400'} focus:ring-1 focus:ring-indigo-500">
+            <input type="text" id="inputAlasan-${rowId}" value="${item.alasan || ''}" ${isCustom ? '' : 'disabled'} placeholder="${isCustom ? 'Nyatakan Alasan...' : '-'}" class="w-full border rounded p-1.5 text-xs ${isCustom ? 'bg-white' : 'bg-gray-100 text-gray-400'}">
           </td>
           <td class="p-3 text-center">
             <button id="btnSave-${rowId}" onclick="saveSingleRow('${item.email}', '${item.role}', '${rowId}')" class="bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] px-3 py-1.5 rounded-md font-medium transition shadow flex items-center gap-1 mx-auto">
@@ -268,12 +228,10 @@
         input.disabled = false;
         input.classList.remove("bg-gray-100", "text-gray-400");
         input.classList.add("bg-white");
-        input.focus();
       } else {
         input.disabled = true;
         input.value = "";
         input.classList.add("bg-gray-100", "text-gray-400");
-        input.classList.remove("bg-white");
       }
     }
 
@@ -282,74 +240,43 @@
       const input = document.getElementById(`inputAlasan-${rowId}`);
       const btn = document.getElementById(`btnSave-${rowId}`);
 
-      const catatanVal = select.value;
-      const alasanVal = input.value;
-
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i>`;
 
       try {
-        const response = await fetch(SCRIPT_URL, {
+        const res = await fetch(SCRIPT_URL, {
           method: "POST",
-          body: JSON.stringify({
-            action: "updateRow",
-            role: role,
-            email: email,
-            catatan: catatanVal,
-            alasan: alasanVal
-          })
+          body: JSON.stringify({ action: "updateRow", role: role, email: email, catatan: select.value, alasan: input.value })
         });
-        const resJson = await response.json();
+        const json = await res.json();
 
-        if (resJson.status === "success") {
+        if (json.status === "success") {
           const item = schoolMasterData.find(r => r.email === email && r.role === role);
-          if (item) {
-            item.catatan = catatanVal;
-            item.alasan = alasanVal;
-          }
+          if (item) { item.catatan = select.value; item.alasan = input.value; }
           btn.className = "bg-emerald-600 text-white text-[11px] px-3 py-1.5 rounded-md font-medium shadow flex items-center gap-1 mx-auto";
           btn.innerHTML = `<i class="fa-solid fa-check"></i> Tersimpan`;
           setTimeout(() => {
             btn.className = "bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] px-3 py-1.5 rounded-md font-medium transition shadow flex items-center gap-1 mx-auto";
             btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
             btn.disabled = false;
-          }, 2000);
-          updateScorecardsCalculated();
-        } else {
-          alert("Gagal menyimpan data.");
-          btn.disabled = false;
-          btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
+          }, 1500);
+          updateScorecards();
         }
       } catch (e) {
-        alert("Ralat rangkaian.");
+        alert("Ralat simpan.");
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Simpan`;
       }
     }
 
-    function updateScorecards(json) {
-      document.getElementById("statTotal").textContent = json.total || 0;
-      document.getElementById("statCompleted").textContent = json.completed || 0;
-      document.getElementById("statPending").textContent = json.pending || 0;
-      document.getElementById("statMurid").textContent = json.muridCount || 0;
-      document.getElementById("statGuru").textContent = json.guruCount || 0;
-
-      document.getElementById("cntAll").textContent = json.total || 0;
-      document.getElementById("cntMurid").textContent = json.muridCount || 0;
-      document.getElementById("cntGuru").textContent = json.guruCount || 0;
-    }
-
-    function updateScorecardsCalculated() {
+    function updateScorecards() {
       const total = schoolMasterData.length;
       const completed = schoolMasterData.filter(r => !!r.catatan).length;
-      const muridCount = schoolMasterData.filter(r => r.role === "Murid").length;
-      const guruCount = schoolMasterData.filter(r => r.role === "Guru").length;
-
       document.getElementById("statTotal").textContent = total;
       document.getElementById("statCompleted").textContent = completed;
       document.getElementById("statPending").textContent = total - completed;
-      document.getElementById("statMurid").textContent = muridCount;
-      document.getElementById("statGuru").textContent = guruCount;
+      document.getElementById("statMurid").textContent = schoolMasterData.filter(r => r.role === "Murid").length;
+      document.getElementById("statGuru").textContent = schoolMasterData.filter(r => r.role === "Guru").length;
     }
 
     function switchTab(tab) {
