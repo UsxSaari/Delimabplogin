@@ -38,15 +38,13 @@
   .kad{width:100%;max-width:420px;background:var(--putih);border:1px solid var(--garis);
     border-radius:10px;padding:28px;box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
   
-  /* Styling Logot Visual */
+  /* Styling Bekas Logo Tunggal PPD Batu Pahat */
   .bekas-logo{
-    display:flex; align-items:center; justify-content:center; gap:16px;
-    margin-bottom:16px; background:rgba(255,255,255,0.95); padding:10px 16px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:18px; background:rgba(255,255,255,0.95); padding:14px;
     border-radius:8px; border:1px solid var(--garis);
   }
-  .bekas-logo img.logo-ppd{height:54px; width:auto; object-fit:contain;}
-  .bekas-logo img.logo-delima{height:38px; width:auto; object-fit:contain;}
-  .pembahagi-logo{width:1px; height:36px; background:var(--garis);}
+  .bekas-logo img.logo-ppd-tunggal{height:85px; width:auto; object-fit:contain;}
 
   .jenama{color:var(--putih);text-align:center;margin-bottom:18px}
   .jenama h1{font-size:23px;margin:0;letter-spacing:-.01em}
@@ -64,7 +62,7 @@
   header{background:var(--putih);border-bottom:1px solid var(--garis);position:sticky;top:0;z-index:20}
   .baris-atas{display:flex;align-items:center;gap:14px;padding:11px 18px;flex-wrap:wrap}
   .tajuk-header{display:flex; align-items:center; gap:12px;}
-  .tajuk-header img{height:32px; width:auto;}
+  .tajuk-header img{height:40px; width:auto;}
   .sekolah strong{display:block;font-size:15.5px;line-height:1.25}
   .sekolah span{font-size:12.5px;color:var(--kelabu)}
   .tolak{margin-left:auto;display:flex;align-items:center;gap:8px}
@@ -137,11 +135,9 @@
 <!-- ══════════════ LOG MASUK ══════════════ -->
 <section id="masuk">
   <div>
-    <!-- PAPARAN LOGO DI ATAS HEADER LOG MASUK -->
+    <!-- LOGO TUNGGAL PPD BATU PAHAT -->
     <div class="bekas-logo">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/2/26/Coat_of_arms_of_Malaysia.svg" alt="Jata Negara / PPD" class="logo-ppd">
-      <div class="pembahagi-logo"></div>
-      <img src="https://delima.moe-dl.edu.my/assets/delima_logo.png" alt="Logo DELIMa" class="logo-delima" onerror="this.onerror=null; this.src='https://wiki.moe-dl.edu.my/images/thumb/8/87/DELIMa_Logo.png/600px-DELIMa_Logo.png';">
+      <img src="Logo ppd.png" alt="Pejabat Pendidikan Daerah Batu Pahat" class="logo-ppd-tunggal">
     </div>
 
     <div class="jenama">
@@ -169,7 +165,7 @@
   <header>
     <div class="baris-atas">
       <div class="tajuk-header">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/2/26/Coat_of_arms_of_Malaysia.svg" alt="Jata Negara">
+        <img src="Logo ppd.png" alt="Logo PPD Batu Pahat">
         <div class="sekolah">
           <strong id="namaSekolah">—</strong>
           <span id="kodSekolah" class="mono"></span>
@@ -378,7 +374,6 @@ function lukis() {
     if (A.ubah[kunci(r.baris)]) tr.classList.add('ubah');
     tr.dataset.baris = r.baris;
 
-    // Dropdown Catatan
     const pilihanCatatan = ['<option value=""></option>'].concat(A.status.map(function (s) {
       return '<option value="' + s + '"' + (nilaiSemasa(r, 'catatan') === s ? ' selected' : '') + '>' + s + '</option>';
     })).join('');
@@ -406,7 +401,6 @@ function lukis() {
   lukisHalaman(maksHalaman);
 }
 
-/* Aktifkan/nyahaktifkan "Nyatakan alasan" berdasarkan pilihan Catatan */
 function tandaAlasan(tr) {
   const catatan = tr.querySelector('[data-medan="catatan"]').value;
   const alasan = tr.querySelector('[data-medan="alasan"]');
@@ -422,7 +416,7 @@ function tandaAlasan(tr) {
 }
 
 function kiraRingkasan(semua) {
-  const siapNama = A.status[0]; // 'SUDAH LOGIN'
+  const siapNama = A.status[0];
   let siap = 0, kosong = 0;
   semua.forEach(function (r) {
     const c = nilaiSemasa(r, 'catatan');
