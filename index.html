@@ -35,18 +35,9 @@
   /* ── Log masuk ───────────────────────────────────────────── */
   #masuk{min-height:100vh;display:grid;place-items:center;padding:24px;
     background:linear-gradient(180deg,var(--biru) 0 42%, var(--kertas) 42% 100%)}
-  .kad{width:100%;max-width:420px;background:var(--putih);border:1px solid var(--garis);
-    border-radius:10px;padding:28px;box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
-  
-  /* Styling Bekas Logo PPD Batu Pahat */
-  .bekas-logo{
-    display:flex; align-items:center; justify-content:center;
-    margin-bottom:18px; background:rgba(255,255,255,0.98); padding:16px;
-    border-radius:8px; border:1px solid var(--garis);
-  }
-  .bekas-logo img.logo-ppd-baharu{height:95px; width:auto; object-fit:contain;}
-
-  .jenama{color:var(--putih);text-align:center;margin-bottom:18px}
+  .kad{width:100%;max-width:400px;background:var(--putih);border:1px solid var(--garis);
+    border-radius:10px;padding:28px}
+  .jenama{color:var(--putih);text-align:center;margin-bottom:22px}
   .jenama h1{font-size:23px;margin:0;letter-spacing:-.01em}
   .jenama p{margin:4px 0 0;opacity:.82;font-size:13px}
   .medan{margin-bottom:14px}
@@ -61,8 +52,6 @@
   /* ── Bar atas + meter ────────────────────────────────────── */
   header{background:var(--putih);border-bottom:1px solid var(--garis);position:sticky;top:0;z-index:20}
   .baris-atas{display:flex;align-items:center;gap:14px;padding:11px 18px;flex-wrap:wrap}
-  .tajuk-header{display:flex; align-items:center; gap:12px;}
-  .tajuk-header img{height:42px; width:auto;}
   .sekolah strong{display:block;font-size:15.5px;line-height:1.25}
   .sekolah span{font-size:12.5px;color:var(--kelabu)}
   .tolak{margin-left:auto;display:flex;align-items:center;gap:8px}
@@ -71,7 +60,7 @@
   .simpan{background:var(--hijau);color:var(--putih);padding:8px 16px;font-weight:600}
   .simpan:disabled{background:#C7CDD4;cursor:not-allowed}
 
-  /* meter kemajuan */
+  /* meter kemajuan — elemen utama halaman */
   .meter{display:flex;height:8px;background:var(--garis)}
   .meter i{display:block;height:100%}
   .meter .siap{background:var(--hijau)}
@@ -104,7 +93,7 @@
   td.orang b{display:block;font-weight:600}
   td.orang span{font-size:12.5px;color:var(--kelabu);word-break:break-all}
   td.status{width:170px}
-  td.status .teks-status{display:inline-block;font-size:13.5px;color:var(--dakwat);font-weight:500}
+  td.status .teks-status{display:inline-block;font-size:13.5px;color:var(--dakwat)}
   td.catatan{width:190px} td.alasan{width:240px}
   .perlu{border-color:var(--merah);background:#FFF6F6}
 
@@ -135,11 +124,6 @@
 <!-- ══════════════ LOG MASUK ══════════════ -->
 <section id="masuk">
   <div>
-    <!-- LOGO KPM / PPD BATU PAHAT -->
-    <div class="bekas-logo">
-      <img src="LOGO BARU PPD BATU PAHAT.png" alt="Logo Pejabat Pendidikan Daerah Batu Pahat" class="logo-ppd-baharu">
-    </div>
-
     <div class="jenama">
       <h1>Semakan Login DELIMa</h1>
       <p>Pejabat Pendidikan Daerah Batu Pahat</p>
@@ -164,12 +148,9 @@
 <main id="sistem" class="sembunyi">
   <header>
     <div class="baris-atas">
-      <div class="tajuk-header">
-        <img src="Logo ppd.png" alt="Logo PPD Batu Pahat">
-        <div class="sekolah">
-          <strong id="namaSekolah">—</strong>
-          <span id="kodSekolah" class="mono"></span>
-        </div>
+      <div class="sekolah">
+        <strong id="namaSekolah">—</strong>
+        <span id="kodSekolah" class="mono"></span>
       </div>
       <div class="tolak">
         <button class="lembut" id="btnTukar">Tukar kata laluan</button>
@@ -230,22 +211,37 @@
 </main>
 
 <script>
+/* ═══════════════ Keadaan aplikasi ═══════════════
+ * NOTA PENTING:
+ * - Lajur "Status" kini PAPARAN SAHAJA — memaparkan nilai sedia ada dalam sheet
+ *   (cth. hasil import automatik). Ia TIDAK boleh disunting oleh pengguna.
+ * - Lajur "Catatan" kini medan yang boleh disunting — dropdown dengan 6 pilihan
+ *   rasmi (SUDAH LOGIN / BELUM LOGIN / TELAH BERPINDAH / ID GURU / ID MURID /
+ *   LAIN-LAIN).
+ * - Lajur "Nyatakan alasan" hanya AKTIF apabila Catatan = LAIN-LAIN; selain itu
+ *   ia tidak aktif (disabled).
+ */
 const A = {
   token: null, sesi: null, jenis: 'Murid',
   status: [], wajibAlasan: [],
-  data: { Murid: null, Guru: null },
-  ubah: {},
+  data: { Murid: null, Guru: null },   // cache dalam pelayar — tukar tab tanpa panggil server
+  ubah: {},                            // "Murid|1234" -> {baris,status,catatan,alasan}
   halaman: 1, perHalaman: 50, ditapis: []
 };
 
 const $ = function (id) { return document.getElementById(id); };
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbzTOXSyM_iOgs57wUJcbsOixOqWMp3tSTc6jqHNnqhBKfQc2Z9RF8tWQbRPpP4z1TgBCA/exec';
+/* ═══════════════ Sambungan ke Apps Script ═══════════════
+ * Tampal URL deployment Web App Apps Script anda di sini
+ * (Deploy → New deployment → Web app → Execute as Me → Who has access: Anyone).
+ * Contoh: https://script.google.com/macros/s/AKfycb.../exec
+ */
+const API_URL = 'https://script.google.com/macros/s/AKfycby7kA63hIC1FMWG2UgyklUQiQJWhMNYMKGx0K1OD-eKuMMUEP8mQgr9P7nVTVURjROp/exec';
 
 function panggil(fn, args) {
   return fetch(API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // elak preflight OPTIONS
     body: JSON.stringify({ fn: fn, args: args || [] })
   })
     .then(function (r) {
@@ -374,7 +370,8 @@ function lukis() {
     if (A.ubah[kunci(r.baris)]) tr.classList.add('ubah');
     tr.dataset.baris = r.baris;
 
-    const pilihanCatatan = ['<option value=""></option>'].concat(A.status.map(function (s) {
+    // Dropdown Catatan — pilihan rasmi (STATUS asal TIDAK disunting lagi)
+    const pilihan = ['<option value=""></option>'].concat(A.status.map(function (s) {
       return '<option value="' + s + '"' + (nilaiSemasa(r, 'catatan') === s ? ' selected' : '') + '>' + s + '</option>';
     })).join('');
 
@@ -382,13 +379,12 @@ function lukis() {
       '<td class="nombor">' + (mula + papar.indexOf(r) + 1) + '</td>' +
       '<td class="orang"><b></b><span class="mono"></span></td>' +
       '<td class="status"><span class="teks-status"></span></td>' +
-      '<td class="catatan"><select data-medan="catatan">' + pilihanCatatan + '</select></td>' +
+      '<td class="catatan"><select data-medan="catatan">' + pilihan + '</select></td>' +
       '<td class="alasan"><input data-medan="alasan" value=""></td>';
 
     tr.querySelector('.orang b').textContent = r.nama;
     tr.querySelector('.orang span').textContent = r.emel;
-    tr.querySelector('.teks-status').textContent = r.status ? r.status : 'Belum Login';
-    
+    tr.querySelector('.teks-status').textContent = r.status ? r.status : '—';
     const alasan = tr.querySelector('[data-medan="alasan"]');
     alasan.value = nilaiSemasa(r, 'alasan');
     tandaAlasan(tr);
@@ -401,22 +397,18 @@ function lukis() {
   lukisHalaman(maksHalaman);
 }
 
+/* Aktifkan/nyahaktifkan "Nyatakan alasan" berdasarkan pilihan Catatan */
 function tandaAlasan(tr) {
   const catatan = tr.querySelector('[data-medan="catatan"]').value;
   const alasan = tr.querySelector('[data-medan="alasan"]');
-  const wajib = (catatan === 'LAIN-LAIN');
-  
+  const wajib = A.wajibAlasan.indexOf(catatan) >= 0;
   alasan.disabled = !wajib;
-  alasan.placeholder = wajib ? 'Nyatakan alasan di sini...' : '';
+  alasan.placeholder = wajib ? 'Wajib diisi' : '';
   alasan.classList.toggle('perlu', wajib && !alasan.value.trim());
-  
-  if (!wajib) {
-    alasan.value = '';
-  }
 }
 
 function kiraRingkasan(semua) {
-  const siapNama = A.status[0];
+  const siapNama = A.status[0]; // 'SUDAH LOGIN'
   let siap = 0, kosong = 0;
   semua.forEach(function (r) {
     const c = nilaiSemasa(r, 'catatan');
@@ -448,32 +440,18 @@ function lukisHalaman(maks) {
 }
 
 /* ═══════════════ Suntingan ═══════════════ */
-$('jadual').addEventListener('change', function (e) {
-  if (e.target.dataset.medan === 'catatan') {
-    const tr = e.target.closest('tr');
-    tandaAlasan(tr);
-    rekodPerubahan(tr);
-  }
-});
-
 $('jadual').addEventListener('input', function (e) {
-  const medan = e.target.dataset.medan;
+  const medan = e.target.dataset.medan; // 'catatan' atau 'alasan' sahaja
   if (!medan) return;
   const tr = e.target.closest('tr');
-  rekodPerubahan(tr);
-});
-
-function rekodPerubahan(tr) {
   const baris = Number(tr.dataset.baris);
   const asal = (A.data[A.jenis] || []).find(function (r) { return r.baris === baris; });
   const k = kunci(baris);
 
-  const catatanVal = tr.querySelector('[data-medan="catatan"]').value;
-  const alasanVal = tr.querySelector('[data-medan="alasan"]').value;
-
   const semasa = A.ubah[k] || { baris: baris, status: asal.status, catatan: asal.catatan, alasan: asal.alasan };
-  semasa.catatan = catatanVal;
-  semasa.alasan = alasanVal;
+  semasa[medan] = e.target.value;
+
+  tandaAlasan(tr);
 
   if (semasa.catatan === asal.catatan && semasa.alasan === asal.alasan) {
     delete A.ubah[k]; tr.classList.remove('ubah');
@@ -482,7 +460,7 @@ function rekodPerubahan(tr) {
   }
   kemasStatusSimpan();
   kiraRingkasan(A.data[A.jenis] || []);
-}
+});
 
 function kemasStatusSimpan() {
   const bil = Object.keys(A.ubah).length;
@@ -495,7 +473,7 @@ window.addEventListener('beforeunload', function (e) {
   if (Object.keys(A.ubah).length) { e.preventDefault(); e.returnValue = ''; }
 });
 
-/* ═══════════════ Tetapan pukal ═══════════════ */
+/* ═══════════════ Tetapan pukal (kini pada Catatan) ═══════════════ */
 $('btnPukal').onclick = function () {
   const nilai = $('pukal').value;
   if (!nilai) { toast('Pilih catatan dahulu.', true); return; }
@@ -505,7 +483,6 @@ $('btnPukal').onclick = function () {
     const k = kunci(r.baris);
     const semasa = A.ubah[k] || { baris: r.baris, status: r.status, catatan: r.catatan, alasan: r.alasan };
     semasa.catatan = nilai;
-    if (nilai !== 'LAIN-LAIN') semasa.alasan = '';
     A.ubah[k] = semasa;
   });
   lukis(); kemasStatusSimpan();
@@ -520,11 +497,11 @@ $('btnSimpan').onclick = function () {
   if (!senarai.length) { toast('Tiada perubahan pada tab ini.'); return; }
 
   const tiadaAlasan = senarai.filter(function (p) {
-    return String(p.catatan || '').toUpperCase() === 'LAIN-LAIN' && !String(p.alasan || '').trim();
+    return A.wajibAlasan.indexOf(String(p.catatan || '').toUpperCase()) >= 0 && !String(p.alasan || '').trim();
   });
   if (tiadaAlasan.length) {
-    toast(tiadaAlasan.length + ' rekod berstatus LAIN-LAIN belum ada alasan.', true);
-    $('tapisStatus').value = 'LAIN-LAIN';
+    toast(tiadaAlasan.length + ' rekod berstatus ' + A.wajibAlasan.join(' / ') + ' belum ada alasan.', true);
+    $('tapisStatus').value = A.wajibAlasan[0];
     A.halaman = 1; lukis();
     return;
   }
@@ -539,6 +516,7 @@ $('btnSimpan').onclick = function () {
         toast(r.mesej, true);
         return;
       }
+      // Sahkan nilai baharu ke dalam cache tempatan (STATUS tidak berubah)
       senarai.forEach(function (p) {
         const asal = (A.data[A.jenis] || []).find(function (x) { return x.baris === p.baris; });
         if (asal) { asal.catatan = p.catatan; asal.alasan = p.alasan; }
