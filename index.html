@@ -2,6 +2,7 @@
 <html lang="ms">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
 <base target="_top">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,7 +39,7 @@
   .kad{width:100%;max-width:400px;background:var(--putih);border:1px solid var(--garis);
     border-radius:10px;padding:28px}
   .jenama{color:var(--putih);text-align:center;margin-bottom:22px}
-  .jenama img{height:150px;width:auto;margin-bottom:12px}
+  .jenama img{height:150px;width:auto;max-width:80vw;margin-bottom:12px}
   .jenama h1{font-size:23px;margin:0;letter-spacing:-.01em}
   .jenama p{margin:4px 0 0;opacity:.82;font-size:13px}
   .medan{margin-bottom:14px}
@@ -51,16 +52,18 @@
     padding:9px 11px;border-radius:4px;font-size:13.5px;margin-bottom:14px}
 
   /* ── Bar atas + meter ────────────────────────────────────── */
- header{background:var(--biru);border-bottom:1px solid var(--garis);position:sticky;top:0;z-index:20}
-.baris-atas{display:flex;align-items:center;gap:14px;padding:14px 18px;flex-wrap:wrap;
-  background:linear-gradient(135deg,var(--biru),#0F2A54)}
-.sekolah strong{display:block;font-size:15.5px;line-height:1.25;color:var(--putih)}
-.sekolah span{font-size:12.5px;color:#AFC0DC}
-.tolak{margin-left:auto;display:flex;align-items:center;gap:8px}
-.lembut{background:var(--putih);border:1px solid var(--garis);padding:7px 12px}
-.lembut:hover{background:var(--biru-muda);border-color:var(--biru)}
-.baris-atas .lembut{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);color:var(--putih)}
-.baris-atas .lembut:hover{background:rgba(255,255,255,.24);border-color:var(--putih)}
+  header{background:var(--biru);border-bottom:1px solid var(--garis);position:sticky;top:0;z-index:20}
+  .baris-atas{display:flex;align-items:center;gap:14px;padding:14px 18px;flex-wrap:wrap;
+    background:linear-gradient(135deg,var(--biru),#0F2A54)}
+  .sekolah{min-width:0}
+  .sekolah strong{display:block;font-size:15.5px;line-height:1.25;color:var(--putih);
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sekolah span{font-size:12.5px;color:#AFC0DC}
+  .tolak{margin-left:auto;display:flex;align-items:center;gap:8px}
+  .lembut{background:var(--putih);border:1px solid var(--garis);padding:7px 12px}
+  .lembut:hover{background:var(--biru-muda);border-color:var(--biru)}
+  .baris-atas .lembut{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);color:var(--putih)}
+  .baris-atas .lembut:hover{background:rgba(255,255,255,.24);border-color:var(--putih)}
   .simpan{background:var(--hijau);color:var(--putih);padding:8px 16px;font-weight:600}
   .simpan:disabled{background:#C7CDD4;cursor:not-allowed}
 
@@ -73,9 +76,9 @@
     background:var(--putih);flex-wrap:wrap}
   .kiraan b{font-variant-numeric:tabular-nums}
 
-  .tab{display:flex;gap:2px;padding:0 18px;background:var(--putih)}
+  .tab{display:flex;gap:2px;padding:0 18px;background:var(--putih);overflow-x:auto;-webkit-overflow-scrolling:touch}
   .tab button{background:none;border:none;border-bottom:3px solid transparent;
-    padding:10px 14px;color:var(--kelabu);font-weight:500;border-radius:0}
+    padding:10px 14px;color:var(--kelabu);font-weight:500;border-radius:0;white-space:nowrap}
   .tab button[aria-selected="true"]{color:var(--biru);border-bottom-color:var(--biru);font-weight:600}
 
   /* ── Penapis ─────────────────────────────────────────────── */
@@ -85,8 +88,8 @@
   .pilih{min-width:170px}
 
   /* ── Jadual ──────────────────────────────────────────────── */
-  .bekas{padding:0 18px 90px}
-  .gulung{overflow-x:auto;background:var(--putih);border:1px solid var(--garis);border-radius:8px}
+  .bekas{padding:0 18px 96px}
+  .gulung{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--putih);border:1px solid var(--garis);border-radius:8px}
   table{border-collapse:collapse;width:100%;min-width:900px}
   th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--garis);vertical-align:top}
   thead th{position:sticky;top:0;background:var(--biru-muda);font-size:12.5px;font-weight:600;
@@ -101,7 +104,7 @@
   td.catatan{width:190px} td.alasan{width:240px}
   .perlu{border-color:var(--merah);background:#FFF6F6}
 
-  .halaman{display:flex;gap:8px;align-items:center;justify-content:center;padding:14px;font-size:13.5px}
+  .halaman{display:flex;gap:8px;align-items:center;justify-content:center;padding:14px;font-size:13.5px;flex-wrap:wrap}
   .kosong{padding:40px 18px;text-align:center;color:var(--kelabu)}
 
   /* ── Bar simpan melekat ──────────────────────────────────── */
@@ -114,11 +117,43 @@
     color:var(--putih);padding:10px 16px;border-radius:999px;font-size:13.5px;z-index:40;max-width:90vw}
   .toast.gagal{background:var(--merah)}
 
+  /* ── Tablet ──────────────────────────────────────────────── */
+  @media (max-width:900px){
+    td.orang{min-width:190px}
+    td.status{width:130px}
+    td.catatan{width:170px}
+    td.alasan{width:200px}
+    .kad{max-width:360px}
+  }
+
+  /* ── Telefon pintar ──────────────────────────────────────── */
   @media (max-width:640px){
-    .bekas{padding:0 10px 96px}
-    .penapis{padding:12px 10px}
-    .baris-atas{padding:10px 12px}
+    #masuk{padding:16px}
+    .kad{padding:22px 18px}
+    .jenama img{height:100px}
+    .jenama h1{font-size:20px}
+    .bekas{padding:0 10px 130px}
+    .penapis{padding:12px 10px;gap:8px}
+    .baris-atas{padding:10px 12px;gap:10px}
     .tab{padding:0 10px}
+    .kiraan{padding:8px 12px;gap:10px 16px;font-size:12.5px}
+    .halaman{padding:12px 8px;font-size:13px}
+
+    /* Bar simpan bawah — susun menegak supaya tak bertindih pada skrin sempit */
+    .bar-bawah{flex-wrap:wrap;padding:10px 12px;gap:8px}
+    .bar-bawah span{width:100%;font-size:12.5px;order:1}
+    .bar-bawah .tolak{width:100%;order:2;justify-content:space-between;margin-left:0}
+    .bar-bawah .buang,.bar-bawah .simpan{flex:1 1 0}
+  }
+
+  /* ── Telefon kecil ───────────────────────────────────────── */
+  @media (max-width:420px){
+    .jenama img{height:80px}
+    .jenama h1{font-size:18px}
+    .cari{min-width:0;flex:1 1 100%}
+    .pilih{min-width:0;flex:1 1 100%}
+    .penapis .medan{width:100%}
+    .baris-atas .tolak{width:100%;justify-content:space-between}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
