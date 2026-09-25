@@ -336,16 +336,16 @@ window.addEventListener('DOMContentLoaded', function() {
 function muatScorecardPublic() {
   panggil('dapatStatistik', [null])
     .then(function(r) {
-      if (r && r.stats) {
+      if (r && r.stats && r.stats.length) {
         let jumSelesai = 0, sudah = 0, belum = 0, pindah = 0, idGmM = 0, lain = 0;
         
         r.stats.forEach(function(s) {
-          jumSelesai += (s.selesai || 0);
-          sudah += (s.sudah || s.selesai || 0);
-          belum += (s.belum || 0);
-          pindah += (s.pindah || 0);
-          idGmM += (s.idGuruMurid || 0);
-          lain += (s.lainLain || 0);
+          jumSelesai += Number(s.selesai || 0);
+          sudah += Number(s.sudah || 0);
+          belum += Number(s.belumLogin || 0);
+          pindah += Number(s.pindah || 0);
+          idGmM += Number(s.idGuruMurid || 0);
+          lain += Number(s.lainLain || 0);
         });
 
         $('scJumlahSelesai').textContent = jumSelesai.toLocaleString();
@@ -355,13 +355,15 @@ function muatScorecardPublic() {
         $('scIdGuruMurid').textContent = idGmM.toLocaleString();
         $('scLainLain').textContent = lain.toLocaleString();
         $('lblStatusData').textContent = 'Terkini';
+      } else {
+        $('lblStatusData').textContent = 'Sila jalankan "Kira Statistik Daerah" di Google Sheets';
       }
     })
-    .catch(function() {
-      $('lblStatusData').textContent = 'Log masuk untuk semakan';
+    .catch(function(err) {
+      console.error(err);
+      $('lblStatusData').textContent = 'Ralat memuatkan data';
     });
 }
-
 /* ═══════════════ Log masuk ═══════════════ */
 $('btnMasuk').onclick = masuk;
 $('kataLaluan').addEventListener('keydown', function (e) { if (e.key === 'Enter') masuk(); });
