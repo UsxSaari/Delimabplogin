@@ -5,13 +5,13 @@
 <base target="_top">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --dakwat:#101828; --biru:#14366B; --biru-muda:#E8EDF6;
-    --merah:#A8202A; --hijau:#14684C; --hijau-muda:#E4F0EB;
-    --kertas:#F5F6F4; --putih:#FFFFFF; --garis:#DCE0DB; --kelabu:#5E6A7A;
-    --radius:6px;
+    --dakwat:#0F172A; --biru:#1E3A8A; --biru-muda:#EFF6FF; --biru-Aksen:#2563EB;
+    --merah:#EF4444; --hijau:#10B981; --hijau-muda:#ECFDF5; --amber:#F59E0B;
+    --kertas:#F8FAFC; --putih:#FFFFFF; --garis:#E2E8F0; --kelabu:#64748B;
+    --radius:10px;
   }
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
@@ -23,66 +23,104 @@
   code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
   button{font:inherit;cursor:pointer;border-radius:var(--radius);border:1px solid transparent}
   button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
-    outline:2px solid var(--biru); outline-offset:2px;
+    outline:2px solid var(--biru-Aksen); outline-offset:2px;
   }
   input,select,textarea{
     font:inherit; color:inherit; background:var(--putih);
-    border:1px solid var(--garis); border-radius:var(--radius); padding:7px 9px; width:100%;
+    border:1px solid var(--garis); border-radius:6px; padding:7px 9px; width:100%;
   }
-  input:disabled,select:disabled{background:#F0F1EF;color:var(--kelabu);cursor:not-allowed}
+  input:disabled,select:disabled{background:#F1F5F9;color:var(--kelabu);cursor:not-allowed}
   .sembunyi{display:none !important}
 
   /* ── Log masuk ───────────────────────────────────────────── */
-  #masuk{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;
-    background:linear-gradient(180deg,var(--biru) 0 45%, var(--kertas) 45% 100%)}
-  .bekas-masuk{width:100%;max-width:880px;display:flex;flex-direction:column;align-items:center}
+  #masuk{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 16px;
+    background:linear-gradient(180deg, #1E3A8A 0%, #0F172A 38%, #F8FAFC 38%, #F8FAFC 100%)}
+  .bekas-masuk{width:100%;max-width:920px;display:flex;flex-direction:column;align-items:center}
   .kad{width:100%;max-width:420px;background:var(--putih);border:1px solid var(--garis);
-    border-radius:10px;padding:28px;box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
+    border-radius:12px;padding:32px;box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.05);}
   
   /* Styling Logo */
   .bekas-logo{
     display:flex; align-items:center; justify-content:center;
-    margin-bottom:18px; background:rgba(255,255,255,0.98); padding:14px;
-    border-radius:8px; border:1px solid var(--garis);
+    margin-bottom:20px; background:rgba(255,255,255,0.98); padding:14px 20px;
+    border-radius:12px; border:1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15); backdrop-filter: blur(8px);
   }
-  .bekas-logo img.logo-ppd-baharu{height:85px; width:auto; object-fit:contain;}
+  .bekas-logo img.logo-ppd-baharu{height:88px; width:auto; object-fit:contain;}
 
-  .jenama{color:var(--putih);text-align:center;margin-bottom:18px}
-  .jenama h1{font-size:23px;margin:0;letter-spacing:-.01em}
-  .jenama p{margin:4px 0 0;opacity:.82;font-size:13px}
-  .medan{margin-bottom:14px}
-  .medan label{display:block;font-size:13px;color:var(--kelabu);margin-bottom:5px}
-  .utama{background:var(--biru);color:var(--putih);padding:10px 16px;width:100%;font-weight:600}
-  .utama:hover{background:#0F2A54}
+  .jenama{color:var(--putih);text-align:center;margin-bottom:22px}
+  .jenama h1{font-size:24px;margin:0;font-weight:700;letter-spacing:-.02em}
+  .jenama p{margin:4px 0 0;opacity:.85;font-size:13.5px;font-weight:400;color:#93C5FD}
+  .medan{margin-bottom:16px}
+  .medan label{display:block;font-size:13px;font-weight:500;color:var(--kelabu);margin-bottom:6px}
+  .utama{background:var(--biru-Aksen);color:var(--putih);padding:11px 16px;width:100%;font-weight:600;border-radius:8px;transition:all .2s ease}
+  .utama:hover{background:#1D4ED8;box-shadow:0 4px 12px rgba(37,99,235,0.3)}
   .utama:disabled{opacity:.55;cursor:not-allowed}
-  .nota{font-size:12.5px;color:var(--kelabu);margin-top:16px;line-height:1.45}
-  .ralat{background:#FBEAEB;color:var(--merah);border-left:3px solid var(--merah);
-    padding:9px 11px;border-radius:4px;font-size:13.5px;margin-bottom:14px}
+  .nota{font-size:12.5px;color:var(--kelabu);margin-top:18px;line-height:1.45}
+  .ralat{background:#FEF2F2;color:var(--merah);border-left:4px solid var(--merah);
+    padding:10px 12px;border-radius:6px;font-size:13.5px;margin-bottom:16px}
 
-  /* ── SCORECARD STYLES (LANDING PAGE) ─────────────────────── */
+  /* ── ELEGAN SCORECARD STYLES (LANDING PAGE) ─────────────────────── */
   .scorecard-container{
-    width:100%; max-width:880px; margin-top:24px;
+    width:100%; max-width:920px; margin-top:28px;
     background:var(--putih); border:1px solid var(--garis);
-    border-radius:10px; padding:20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    border-radius:14px; padding:24px 28px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   }
   .scorecard-header{
-    display:flex; align-items:center; justify-space-between;
-    border-bottom:1px solid var(--garis); padding-bottom:10px; margin-bottom:16px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--garis); padding-bottom:14px; margin-bottom:20px;
   }
-  .scorecard-header h3{margin:0; font-size:15px; color:var(--biru);}
+  .scorecard-header .tajuk-box{display:flex; align-items:center; gap:10px;}
+  .scorecard-header h3{margin:0; font-size:16px; font-weight:700; color:var(--dakwat); letter-spacing:-0.01em;}
+  .badge-terkini{
+    background:#F1F5F9; color:#475569; font-size:11px; font-weight:600;
+    padding:3px 9px; border-radius:999px; border:1px solid #E2E8F0;
+    display:inline-flex; align-items:center; gap:5px;
+  }
+  .badge-terkini i{width:6px; height:6px; background:var(--hijau); border-radius:50%; display:inline-block;}
+
   .scorecard-grid{
-    display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px;
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(135px, 1fr)); gap:14px;
   }
   .card-item{
-    background:var(--kertas); border:1px solid var(--garis); border-radius:6px;
-    padding:12px; text-align:center;
+    background:#FAFAFA; border:1px solid var(--garis); border-radius:10px;
+    padding:16px 12px; text-align:center; position:relative; overflow:hidden;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   }
+  .card-item:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+    background:var(--putih);
+  }
+  .card-item::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px; background:var(--garis);
+  }
+  
+  /* Kad Utama Highlight */
   .card-item.utama-card{
-    background:var(--biru-muda); border-color:var(--biru);
+    background:linear-gradient(135deg, #1E3A8A 0%, #1E40AF 100%);
+    border-color:#1E3A8A; color:var(--putih);
   }
-  .card-item .label{font-size:11.5px; color:var(--kelabu); font-weight:500; display:block; margin-bottom:4px;}
-  .card-item .nilai{font-size:18px; font-weight:700; color:var(--dakwat); font-family:"IBM Plex Mono",monospace;}
-  .card-item.utama-card .nilai{color:var(--biru); font-size:22px;}
+  .card-item.utama-card::before{background:#10B981;}
+  .card-item.utama-card .label{color:#93C5FD; font-weight:600;}
+  .card-item.utama-card .nilai{color:var(--putih); font-size:24px;}
+
+  /* Warna Aksen Kad */
+  .card-item.sc-sudah::before{background:var(--hijau);}
+  .card-item.sc-belum::before{background:var(--merah);}
+  .card-item.sc-pindah::before{background:var(--amber);}
+  .card-item.sc-id::before{background:var(--biru-Aksen);}
+  .card-item.sc-lain::before{background:#8B5CF6;}
+
+  .card-item .label{
+    font-size:11px; color:var(--kelabu); font-weight:600; display:block;
+    margin-bottom:6px; letter-spacing:0.04em; text-transform:uppercase;
+  }
+  .card-item .nilai{
+    font-size:21px; font-weight:700; color:var(--dakwat);
+    font-family:"IBM Plex Mono",monospace; line-height:1.2;
+  }
 
   /* ── Bar atas + meter ────────────────────────────────────── */
   header{background:var(--putih);border-bottom:1px solid var(--garis);position:sticky;top:0;z-index:20}
@@ -93,7 +131,7 @@
   .sekolah span{font-size:12.5px;color:var(--kelabu)}
   .tolak{margin-left:auto;display:flex;align-items:center;gap:8px}
   .lembut{background:var(--putih);border:1px solid var(--garis);padding:7px 12px}
-  .lembut:hover{background:var(--biru-muda);border-color:var(--biru)}
+  .lembut:hover{background:var(--biru-muda);border-color:var(--biru-Aksen)}
   .simpan{background:var(--hijau);color:var(--putih);padding:8px 16px;font-weight:600}
   .simpan:disabled{background:#C7CDD4;cursor:not-allowed}
 
@@ -109,7 +147,7 @@
   .tab{display:flex;gap:2px;padding:0 18px;background:var(--putih)}
   .tab button{background:none;border:none;border-bottom:3px solid transparent;
     padding:10px 14px;color:var(--kelabu);font-weight:500;border-radius:0}
-  .tab button[aria-selected="true"]{color:var(--biru);border-bottom-color:var(--biru);font-weight:600}
+  .tab button[aria-selected="true"]{color:var(--biru-Aksen);border-bottom-color:var(--biru-Aksen);font-weight:600}
 
   /* ── Penapis ─────────────────────────────────────────────── */
   .penapis{display:flex;gap:10px;padding:12px 18px;flex-wrap:wrap;align-items:flex-end}
@@ -163,11 +201,11 @@
 <section id="masuk">
   <div class="bekas-masuk">
     <div class="bekas-logo">
-      <img src="https://usxsaari.github.io/Delimabplogin/LOGO%20BARU%20PPD%20BATU%20PAHAT.png" alt="Logo Pejabat Pendidikan Daerah Batu Pahat" class="logo-ppd-baharu" onerror="this.onerror=null; this.src='Logo ppd.png';">
+      <img src="https://usxsaari.github.io/Delimabplogin/Logo%20ppd.png" alt="Logo Pejabat Pendidikan Daerah Batu Pahat" class="logo-ppd-baharu" onerror="this.onerror=null; this.src='Logo ppd.png';">
     </div>
 
     <div class="jenama">
-      <h1SEMAKAN LOGIN DELIMa</h1>
+      <h1>Semakan Login DELIMa</h1>
       <p>Pejabat Pendidikan Daerah Batu Pahat</p>
     </div>
 
@@ -185,34 +223,36 @@
       <p class="nota">Kali pertama log masuk, gunakan kod sekolah sebagai kata laluan, kemudian tukar di dalam sistem.</p>
     </div>
 
-    <!-- ── SCORECARD / STATISTIK LANDING PAGE ── -->
+    <!-- ── SCORECARD ELEGAN (LANDING PAGE) ── -->
     <div class="scorecard-container">
       <div class="scorecard-header">
-        <h3>Ringkasan Status Semakan Daerah</h3>
-        <span style="font-size:12px; color:var(--kelabu)" id="lblStatusData">Memuatkan statistik...</span>
+        <div class="tajuk-box">
+          <h3>Ringkasan Status Semakan Daerah</h3>
+        </div>
+        <span class="badge-terkini" id="lblStatusData"><i></i> Memuatkan...</span>
       </div>
       <div class="scorecard-grid">
         <div class="card-item utama-card">
           <span class="label">JUMLAH SEMAKAN</span>
           <span class="nilai" id="scJumlahSelesai">0</span>
         </div>
-        <div class="card-item">
+        <div class="card-item sc-sudah">
           <span class="label">SUDAH LOGIN</span>
           <span class="nilai" id="scSudahLogin">0</span>
         </div>
-        <div class="card-item">
+        <div class="card-item sc-belum">
           <span class="label">BELUM LOGIN</span>
           <span class="nilai" id="scBelumLogin">0</span>
         </div>
-        <div class="card-item">
+        <div class="card-item sc-pindah">
           <span class="label">TELAH BERPINDAH</span>
           <span class="nilai" id="scPindah">0</span>
         </div>
-        <div class="card-item">
+        <div class="card-item sc-id">
           <span class="label">ID GURU / MURID</span>
           <span class="nilai" id="scIdGuruMurid">0</span>
         </div>
-        <div class="card-item">
+        <div class="card-item sc-lain">
           <span class="label">LAIN-LAIN</span>
           <span class="nilai" id="scLainLain">0</span>
         </div>
@@ -342,7 +382,6 @@ function muatScorecardPublic() {
         r.stats.forEach(function(s) {
           jumSelesai += Number(s.selesai || 0);
           sudah += Number(s.sudah || 0);
-          // Menggunakan semakan berperingkat untuk mengelakkan nilai undefined
           belum += Number(s.belumLogin !== undefined ? s.belumLogin : (s.belum || 0));
           pindah += Number(s.pindah || 0);
           idGmM += Number(s.idGuruMurid || 0);
@@ -355,14 +394,14 @@ function muatScorecardPublic() {
         $('scPindah').textContent = isNaN(pindah) ? 0 : pindah.toLocaleString();
         $('scIdGuruMurid').textContent = isNaN(idGmM) ? 0 : idGmM.toLocaleString();
         $('scLainLain').textContent = isNaN(lain) ? 0 : lain.toLocaleString();
-        $('lblStatusData').textContent = 'Terkini';
+        $('lblStatusData').innerHTML = '<i></i> Terkini';
       } else {
-        $('lblStatusData').textContent = 'Sila jalankan Kira Statistik';
+        $('lblStatusData').innerHTML = '<i></i> Sila Kira Statistik';
       }
     })
     .catch(function(err) {
       console.error(err);
-      $('lblStatusData').textContent = 'Log masuk untuk semakan';
+      $('lblStatusData').innerHTML = '<i></i> Log masuk semakan';
     });
 }
 
