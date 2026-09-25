@@ -342,18 +342,19 @@ function muatScorecardPublic() {
         r.stats.forEach(function(s) {
           jumSelesai += Number(s.selesai || 0);
           sudah += Number(s.sudah || 0);
-          belum += Number(s.belumLogin || 0);
+          // Menggunakan semakan berperingkat untuk mengelakkan nilai undefined
+          belum += Number(s.belumLogin !== undefined ? s.belumLogin : (s.belum || 0));
           pindah += Number(s.pindah || 0);
           idGmM += Number(s.idGuruMurid || 0);
           lain += Number(s.lainLain || 0);
         });
 
-        $('scJumlahSelesai').textContent = jumSelesai.toLocaleString();
-        $('scSudahLogin').textContent = sudah.toLocaleString();
-        $('scBelumLogin').textContent = belum.toLocaleString();
-        $('scPindah').textContent = pindah.toLocaleString();
-        $('scIdGuruMurid').textContent = idGmM.toLocaleString();
-        $('scLainLain').textContent = lain.toLocaleString();
+        $('scJumlahSelesai').textContent = isNaN(jumSelesai) ? 0 : jumSelesai.toLocaleString();
+        $('scSudahLogin').textContent = isNaN(sudah) ? 0 : sudah.toLocaleString();
+        $('scBelumLogin').textContent = isNaN(belum) ? 0 : belum.toLocaleString();
+        $('scPindah').textContent = isNaN(pindah) ? 0 : pindah.toLocaleString();
+        $('scIdGuruMurid').textContent = isNaN(idGmM) ? 0 : idGmM.toLocaleString();
+        $('scLainLain').textContent = isNaN(lain) ? 0 : lain.toLocaleString();
         $('lblStatusData').textContent = 'Terkini';
       } else {
         $('lblStatusData').textContent = 'Sila jalankan Kira Statistik';
