@@ -2,9 +2,6 @@
 <html lang="ms">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-<link rel="icon" type="image/png" href="https://usxsaari.github.io/Delimabplogin/LOGO%20BARU%20PPD%20BATU%20PAHAT.png">
-<link rel="apple-touch-icon" href="https://usxsaari.github.io/Delimabplogin/LOGO%20BARU%20PPD%20BATU%20PAHAT.png">
 <base target="_top">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,15 +33,23 @@
   .sembunyi{display:none !important}
 
   /* ── Log masuk ───────────────────────────────────────────── */
-  #masuk{min-height:100vh;display:grid;place-items:center;padding:24px;
-    background:var(--kertas)}
-  .kad{width:100%;max-width:400px;background:var(--putih);border:1px solid var(--garis);
-    border-radius:10px;padding:28px}
-  .jenama{color:var(--dakwat);text-align:center;margin-bottom:20px;padding-bottom:18px;
-    border-bottom:1px solid var(--garis)}
-  .jenama img{height:110px;width:auto;max-width:80%;margin-bottom:10px}
-  .jenama h1{font-size:21px;margin:0;letter-spacing:-.01em;color:var(--biru)}
-  .jenama p{margin:4px 0 0;color:var(--kelabu);font-size:13px}
+  #masuk{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px;
+    background:linear-gradient(180deg,var(--biru) 0 45%, var(--kertas) 45% 100%)}
+  .bekas-masuk{width:100%;max-width:880px;display:flex;flex-direction:column;align-items:center}
+  .kad{width:100%;max-width:420px;background:var(--putih);border:1px solid var(--garis);
+    border-radius:10px;padding:28px;box-shadow: 0 4px 12px rgba(0,0,0,0.08);}
+  
+  /* Styling Logo */
+  .bekas-logo{
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:18px; background:rgba(255,255,255,0.98); padding:14px;
+    border-radius:8px; border:1px solid var(--garis);
+  }
+  .bekas-logo img.logo-ppd-baharu{height:85px; width:auto; object-fit:contain;}
+
+  .jenama{color:var(--putih);text-align:center;margin-bottom:18px}
+  .jenama h1{font-size:23px;margin:0;letter-spacing:-.01em}
+  .jenama p{margin:4px 0 0;opacity:.82;font-size:13px}
   .medan{margin-bottom:14px}
   .medan label{display:block;font-size:13px;color:var(--kelabu);margin-bottom:5px}
   .utama{background:var(--biru);color:var(--putih);padding:10px 16px;width:100%;font-weight:600}
@@ -54,23 +59,45 @@
   .ralat{background:#FBEAEB;color:var(--merah);border-left:3px solid var(--merah);
     padding:9px 11px;border-radius:4px;font-size:13.5px;margin-bottom:14px}
 
+  /* ── SCORECARD STYLES (LANDING PAGE) ─────────────────────── */
+  .scorecard-container{
+    width:100%; max-width:880px; margin-top:24px;
+    background:var(--putih); border:1px solid var(--garis);
+    border-radius:10px; padding:20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  .scorecard-header{
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid var(--garis); padding-bottom:10px; margin-bottom:16px;
+  }
+  .scorecard-header h3{margin:0; font-size:15px; color:var(--biru);}
+  .scorecard-grid{
+    display:grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap:12px;
+  }
+  .card-item{
+    background:var(--kertas); border:1px solid var(--garis); border-radius:6px;
+    padding:12px; text-align:center;
+  }
+  .card-item.utama-card{
+    background:var(--biru-muda); border-color:var(--biru);
+  }
+  .card-item .label{font-size:11.5px; color:var(--kelabu); font-weight:500; display:block; margin-bottom:4px;}
+  .card-item .nilai{font-size:18px; font-weight:700; color:var(--dakwat); font-family:"IBM Plex Mono",monospace;}
+  .card-item.utama-card .nilai{color:var(--biru); font-size:22px;}
+
   /* ── Bar atas + meter ────────────────────────────────────── */
-  header{background:var(--biru);border-bottom:1px solid var(--garis);position:sticky;top:0;z-index:20}
-  .baris-atas{display:flex;align-items:center;gap:14px;padding:14px 18px;flex-wrap:wrap;
-    background:linear-gradient(135deg,var(--biru),#0F2A54)}
-  .sekolah{min-width:0}
-  .sekolah strong{display:block;font-size:15.5px;line-height:1.25;color:var(--putih);
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .sekolah span{font-size:12.5px;color:#AFC0DC}
+  header{background:var(--putih);border-bottom:1px solid var(--garis);position:sticky;top:0;z-index:20}
+  .baris-atas{display:flex;align-items:center;gap:14px;padding:11px 18px;flex-wrap:wrap}
+  .tajuk-header{display:flex; align-items:center; gap:12px;}
+  .tajuk-header img{height:40px; width:auto;}
+  .sekolah strong{display:block;font-size:15.5px;line-height:1.25}
+  .sekolah span{font-size:12.5px;color:var(--kelabu)}
   .tolak{margin-left:auto;display:flex;align-items:center;gap:8px}
   .lembut{background:var(--putih);border:1px solid var(--garis);padding:7px 12px}
   .lembut:hover{background:var(--biru-muda);border-color:var(--biru)}
-  .baris-atas .lembut{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);color:var(--putih)}
-  .baris-atas .lembut:hover{background:rgba(255,255,255,.24);border-color:var(--putih)}
   .simpan{background:var(--hijau);color:var(--putih);padding:8px 16px;font-weight:600}
   .simpan:disabled{background:#C7CDD4;cursor:not-allowed}
 
-  /* meter kemajuan — elemen utama halaman */
+  /* meter kemajuan */
   .meter{display:flex;height:8px;background:var(--garis)}
   .meter i{display:block;height:100%}
   .meter .siap{background:var(--hijau)}
@@ -79,9 +106,9 @@
     background:var(--putih);flex-wrap:wrap}
   .kiraan b{font-variant-numeric:tabular-nums}
 
-  .tab{display:flex;gap:2px;padding:0 18px;background:var(--putih);overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tab{display:flex;gap:2px;padding:0 18px;background:var(--putih)}
   .tab button{background:none;border:none;border-bottom:3px solid transparent;
-    padding:10px 14px;color:var(--kelabu);font-weight:500;border-radius:0;white-space:nowrap}
+    padding:10px 14px;color:var(--kelabu);font-weight:500;border-radius:0}
   .tab button[aria-selected="true"]{color:var(--biru);border-bottom-color:var(--biru);font-weight:600}
 
   /* ── Penapis ─────────────────────────────────────────────── */
@@ -91,8 +118,8 @@
   .pilih{min-width:170px}
 
   /* ── Jadual ──────────────────────────────────────────────── */
-  .bekas{padding:0 18px 96px}
-  .gulung{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--putih);border:1px solid var(--garis);border-radius:8px}
+  .bekas{padding:0 18px 90px}
+  .gulung{overflow-x:auto;background:var(--putih);border:1px solid var(--garis);border-radius:8px}
   table{border-collapse:collapse;width:100%;min-width:900px}
   th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--garis);vertical-align:top}
   thead th{position:sticky;top:0;background:var(--biru-muda);font-size:12.5px;font-weight:600;
@@ -103,11 +130,11 @@
   td.orang b{display:block;font-weight:600}
   td.orang span{font-size:12.5px;color:var(--kelabu);word-break:break-all}
   td.status{width:170px}
-  td.status .teks-status{display:inline-block;font-size:13.5px;color:var(--dakwat)}
+  td.status .teks-status{display:inline-block;font-size:13.5px;color:var(--dakwat);font-weight:500}
   td.catatan{width:190px} td.alasan{width:240px}
   .perlu{border-color:var(--merah);background:#FFF6F6}
 
-  .halaman{display:flex;gap:8px;align-items:center;justify-content:center;padding:14px;font-size:13.5px;flex-wrap:wrap}
+  .halaman{display:flex;gap:8px;align-items:center;justify-content:center;padding:14px;font-size:13.5px}
   .kosong{padding:40px 18px;text-align:center;color:var(--kelabu)}
 
   /* ── Bar simpan melekat ──────────────────────────────────── */
@@ -120,43 +147,12 @@
     color:var(--putih);padding:10px 16px;border-radius:999px;font-size:13.5px;z-index:40;max-width:90vw}
   .toast.gagal{background:var(--merah)}
 
-  /* ── Tablet ──────────────────────────────────────────────── */
-  @media (max-width:900px){
-    td.orang{min-width:190px}
-    td.status{width:130px}
-    td.catatan{width:170px}
-    td.alasan{width:200px}
-    .kad{max-width:360px}
-  }
-
-  /* ── Telefon pintar ──────────────────────────────────────── */
   @media (max-width:640px){
-    #masuk{padding:16px}
-    .kad{padding:22px 18px}
-    .jenama img{height:100px}
-    .jenama h1{font-size:20px}
-    .bekas{padding:0 10px 130px}
-    .penapis{padding:12px 10px;gap:8px}
-    .baris-atas{padding:10px 12px;gap:10px}
+    .bekas{padding:0 10px 96px}
+    .penapis{padding:12px 10px}
+    .baris-atas{padding:10px 12px}
     .tab{padding:0 10px}
-    .kiraan{padding:8px 12px;gap:10px 16px;font-size:12.5px}
-    .halaman{padding:12px 8px;font-size:13px}
-
-    /* Bar simpan bawah — susun menegak supaya tak bertindih pada skrin sempit */
-    .bar-bawah{flex-wrap:wrap;padding:10px 12px;gap:8px}
-    .bar-bawah span{width:100%;font-size:12.5px;order:1}
-    .bar-bawah .tolak{width:100%;order:2;justify-content:space-between;margin-left:0}
-    .bar-bawah .buang,.bar-bawah .simpan{flex:1 1 0}
-  }
-
-  /* ── Telefon kecil ───────────────────────────────────────── */
-  @media (max-width:420px){
-    .jenama img{height:80px}
-    .jenama h1{font-size:18px}
-    .cari{min-width:0;flex:1 1 100%}
-    .pilih{min-width:0;flex:1 1 100%}
-    .penapis .medan{width:100%}
-    .baris-atas .tolak{width:100%;justify-content:space-between}
+    .scorecard-grid{grid-template-columns: repeat(2, 1fr);}
   }
   @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
@@ -165,23 +161,64 @@
 
 <!-- ══════════════ LOG MASUK ══════════════ -->
 <section id="masuk">
-  <div class="kad">
+  <div class="bekas-masuk">
+    <div class="bekas-logo">
+      <img src="Logo ppd.png" alt="Logo Pejabat Pendidikan Daerah Batu Pahat" class="logo-ppd-baharu" onerror="this.onerror=null; this.src='https://usxsaari.github.io/Delimabplogin/Logo%20ppd.png';">
+    </div>
+
     <div class="jenama">
-      <img src="https://usxsaari.github.io/Delimabplogin/LOGO%20BARU%20PPD%20BATU%20PAHAT.png" alt="Logo PPDBP">
       <h1>Semakan Login DELIMa</h1>
       <p>Pejabat Pendidikan Daerah Batu Pahat</p>
     </div>
-    <div id="ralatMasuk" class="ralat sembunyi"></div>
-    <div class="medan">
-      <label for="emel">Emel Admin/Pentadbir Sekolah</label>
-      <input id="emel" type="email" autocomplete="username" placeholder="sekolah-1234@moe-dl.edu.my">
+
+    <div class="kad">
+      <div id="ralatMasuk" class="ralat sembunyi"></div>
+      <div class="medan">
+        <label for="emel">Emel pentadbir sekolah</label>
+        <input id="emel" type="email" autocomplete="username" placeholder="nama@moe-dl.edu.my">
+      </div>
+      <div class="medan">
+        <label for="kataLaluan">Kata laluan</label>
+        <input id="kataLaluan" type="password" autocomplete="current-password">
+      </div>
+      <button class="utama" id="btnMasuk">Log masuk</button>
+      <p class="nota">Kali pertama log masuk, gunakan kod sekolah sebagai kata laluan, kemudian tukar di dalam sistem.</p>
     </div>
-    <div class="medan">
-      <label for="kataLaluan">Kata laluan</label>
-      <input id="kataLaluan" type="password" autocomplete="current-password">
+
+    <!-- ── SCORECARD / STATISTIK LANDING PAGE ── -->
+    <div class="scorecard-container">
+      <div class="scorecard-header">
+        <h3>Ringkasan Status Semakan Daerah</h3>
+        <span style="font-size:12px; color:var(--kelabu)" id="lblStatusData">Memuatkan statistik...</span>
+      </div>
+      <div class="scorecard-grid">
+        <div class="card-item utama-card">
+          <span class="label">JUMLAH SEMAKAN</span>
+          <span class="nilai" id="scJumlahSelesai">0</span>
+        </div>
+        <div class="card-item">
+          <span class="label">SUDAH LOGIN</span>
+          <span class="nilai" id="scSudahLogin">0</span>
+        </div>
+        <div class="card-item">
+          <span class="label">BELUM LOGIN</span>
+          <span class="nilai" id="scBelumLogin">0</span>
+        </div>
+        <div class="card-item">
+          <span class="label">TELAH BERPINDAH</span>
+          <span class="nilai" id="scPindah">0</span>
+        </div>
+        <div class="card-item">
+          <span class="label">ID GURU / MURID</span>
+          <span class="nilai" id="scIdGuruMurid">0</span>
+        </div>
+        <div class="card-item">
+          <span class="label">LAIN-LAIN</span>
+          <span class="nilai" id="scLainLain">0</span>
+        </div>
+      </div>
     </div>
-    <button class="utama" id="btnMasuk">Log masuk</button>
-    <p class="nota">Kali pertama log masuk, gunakan kod sekolah sebagai kata laluan, kemudian tukar di dalam sistem.</p>
+
   </div>
 </section>
 
@@ -189,9 +226,12 @@
 <main id="sistem" class="sembunyi">
   <header>
     <div class="baris-atas">
-      <div class="sekolah">
-        <strong id="namaSekolah">—</strong>
-        <span id="kodSekolah" class="mono"></span>
+      <div class="tajuk-header">
+        <img src="Logo ppd.png" alt="Logo PPD Batu Pahat" onerror="this.onerror=null; this.src='https://usxsaari.github.io/Delimabplogin/Logo%20ppd.png';">
+        <div class="sekolah">
+          <strong id="namaSekolah">—</strong>
+          <span id="kodSekolah" class="mono"></span>
+        </div>
       </div>
       <div class="tolak">
         <button class="lembut" id="btnTukar">Tukar kata laluan</button>
@@ -252,37 +292,22 @@
 </main>
 
 <script>
-/* ═══════════════ Keadaan aplikasi ═══════════════
- * NOTA PENTING:
- * - Lajur "Status" kini PAPARAN SAHAJA — memaparkan nilai sedia ada dalam sheet
- *   (cth. hasil import automatik). Ia TIDAK boleh disunting oleh pengguna.
- * - Lajur "Catatan" kini medan yang boleh disunting — dropdown dengan 6 pilihan
- *   rasmi (SUDAH LOGIN / BELUM LOGIN / TELAH BERPINDAH / ID GURU / ID MURID /
- *   LAIN-LAIN).
- * - Lajur "Nyatakan alasan" hanya AKTIF apabila Catatan = LAIN-LAIN; selain itu
- *   ia tidak aktif (disabled).
- */
 const A = {
   token: null, sesi: null, jenis: 'Murid',
   status: [], wajibAlasan: [],
-  data: { Murid: null, Guru: null },   // cache dalam pelayar — tukar tab tanpa panggil server
-  ubah: {},                            // "Murid|1234" -> {baris,status,catatan,alasan}
+  data: { Murid: null, Guru: null },
+  ubah: {},
   halaman: 1, perHalaman: 50, ditapis: []
 };
 
 const $ = function (id) { return document.getElementById(id); };
 
-/* ═══════════════ Sambungan ke Apps Script ═══════════════
- * Tampal URL deployment Web App Apps Script anda di sini
- * (Deploy → New deployment → Web app → Execute as Me → Who has access: Anyone).
- * Contoh: https://script.google.com/macros/s/AKfycb.../exec
- */
-const API_URL = 'https://script.google.com/macros/s/AKfycby7kA63hIC1FMWG2UgyklUQiQJWhMNYMKGx0K1OD-eKuMMUEP8mQgr9P7nVTVURjROp/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzTOXSyM_iOgs57wUJcbsOixOqWMp3tSTc6jqHNnqhBKfQc2Z9RF8tWQbRPpP4z1TgBCA/exec';
 
 function panggil(fn, args) {
   return fetch(API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // elak preflight OPTIONS
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ fn: fn, args: args || [] })
   })
     .then(function (r) {
@@ -301,6 +326,40 @@ function toast(mesej, gagal) {
   t.textContent = mesej;
   document.body.appendChild(t);
   setTimeout(function () { t.remove(); }, gagal ? 6000 : 3200);
+}
+
+/* ═══════════════ MUAT SCORECARD AWAL ═══════════════ */
+window.addEventListener('DOMContentLoaded', function() {
+  muatScorecardPublic();
+});
+
+function muatScorecardPublic() {
+  panggil('dapatStatistik', [null])
+    .then(function(r) {
+      if (r && r.stats) {
+        let jumSelesai = 0, sudah = 0, belum = 0, pindah = 0, idGmM = 0, lain = 0;
+        
+        r.stats.forEach(function(s) {
+          jumSelesai += (s.selesai || 0);
+          sudah += (s.sudah || s.selesai || 0);
+          belum += (s.belum || 0);
+          pindah += (s.pindah || 0);
+          idGmM += (s.idGuruMurid || 0);
+          lain += (s.lainLain || 0);
+        });
+
+        $('scJumlahSelesai').textContent = jumSelesai.toLocaleString();
+        $('scSudahLogin').textContent = sudah.toLocaleString();
+        $('scBelumLogin').textContent = belum.toLocaleString();
+        $('scPindah').textContent = pindah.toLocaleString();
+        $('scIdGuruMurid').textContent = idGmM.toLocaleString();
+        $('scLainLain').textContent = lain.toLocaleString();
+        $('lblStatusData').textContent = 'Terkini';
+      }
+    })
+    .catch(function() {
+      $('lblStatusData').textContent = 'Log masuk untuk semakan';
+    });
 }
 
 /* ═══════════════ Log masuk ═══════════════ */
@@ -411,8 +470,7 @@ function lukis() {
     if (A.ubah[kunci(r.baris)]) tr.classList.add('ubah');
     tr.dataset.baris = r.baris;
 
-    // Dropdown Catatan — pilihan rasmi (STATUS asal TIDAK disunting lagi)
-    const pilihan = ['<option value=""></option>'].concat(A.status.map(function (s) {
+    const pilihanCatatan = ['<option value=""></option>'].concat(A.status.map(function (s) {
       return '<option value="' + s + '"' + (nilaiSemasa(r, 'catatan') === s ? ' selected' : '') + '>' + s + '</option>';
     })).join('');
 
@@ -420,12 +478,13 @@ function lukis() {
       '<td class="nombor">' + (mula + papar.indexOf(r) + 1) + '</td>' +
       '<td class="orang"><b></b><span class="mono"></span></td>' +
       '<td class="status"><span class="teks-status"></span></td>' +
-      '<td class="catatan"><select data-medan="catatan">' + pilihan + '</select></td>' +
+      '<td class="catatan"><select data-medan="catatan">' + pilihanCatatan + '</select></td>' +
       '<td class="alasan"><input data-medan="alasan" value=""></td>';
 
     tr.querySelector('.orang b').textContent = r.nama;
     tr.querySelector('.orang span').textContent = r.emel;
-    tr.querySelector('.teks-status').textContent = r.status ? r.status : '—';
+    tr.querySelector('.teks-status').textContent = r.status ? r.status : 'Belum Login';
+    
     const alasan = tr.querySelector('[data-medan="alasan"]');
     alasan.value = nilaiSemasa(r, 'alasan');
     tandaAlasan(tr);
@@ -438,18 +497,22 @@ function lukis() {
   lukisHalaman(maksHalaman);
 }
 
-/* Aktifkan/nyahaktifkan "Nyatakan alasan" berdasarkan pilihan Catatan */
 function tandaAlasan(tr) {
   const catatan = tr.querySelector('[data-medan="catatan"]').value;
   const alasan = tr.querySelector('[data-medan="alasan"]');
-  const wajib = A.wajibAlasan.indexOf(catatan) >= 0;
+  const wajib = (catatan === 'LAIN-LAIN');
+  
   alasan.disabled = !wajib;
-  alasan.placeholder = wajib ? 'Wajib diisi' : '';
+  alasan.placeholder = wajib ? 'Nyatakan alasan di sini...' : '';
   alasan.classList.toggle('perlu', wajib && !alasan.value.trim());
+  
+  if (!wajib) {
+    alasan.value = '';
+  }
 }
 
 function kiraRingkasan(semua) {
-  const siapNama = A.status[0]; // 'SUDAH LOGIN'
+  const siapNama = A.status[0];
   let siap = 0, kosong = 0;
   semua.forEach(function (r) {
     const c = nilaiSemasa(r, 'catatan');
@@ -481,18 +544,32 @@ function lukisHalaman(maks) {
 }
 
 /* ═══════════════ Suntingan ═══════════════ */
+$('jadual').addEventListener('change', function (e) {
+  if (e.target.dataset.medan === 'catatan') {
+    const tr = e.target.closest('tr');
+    tandaAlasan(tr);
+    rekodPerubahan(tr);
+  }
+});
+
 $('jadual').addEventListener('input', function (e) {
-  const medan = e.target.dataset.medan; // 'catatan' atau 'alasan' sahaja
+  const medan = e.target.dataset.medan;
   if (!medan) return;
   const tr = e.target.closest('tr');
+  rekodPerubahan(tr);
+});
+
+function rekodPerubahan(tr) {
   const baris = Number(tr.dataset.baris);
   const asal = (A.data[A.jenis] || []).find(function (r) { return r.baris === baris; });
   const k = kunci(baris);
 
-  const semasa = A.ubah[k] || { baris: baris, status: asal.status, catatan: asal.catatan, alasan: asal.alasan };
-  semasa[medan] = e.target.value;
+  const catatanVal = tr.querySelector('[data-medan="catatan"]').value;
+  const alasanVal = tr.querySelector('[data-medan="alasan"]').value;
 
-  tandaAlasan(tr);
+  const semasa = A.ubah[k] || { baris: baris, status: asal.status, catatan: asal.catatan, alasan: asal.alasan };
+  semasa.catatan = catatanVal;
+  semasa.alasan = alasanVal;
 
   if (semasa.catatan === asal.catatan && semasa.alasan === asal.alasan) {
     delete A.ubah[k]; tr.classList.remove('ubah');
@@ -501,7 +578,7 @@ $('jadual').addEventListener('input', function (e) {
   }
   kemasStatusSimpan();
   kiraRingkasan(A.data[A.jenis] || []);
-});
+}
 
 function kemasStatusSimpan() {
   const bil = Object.keys(A.ubah).length;
@@ -514,7 +591,7 @@ window.addEventListener('beforeunload', function (e) {
   if (Object.keys(A.ubah).length) { e.preventDefault(); e.returnValue = ''; }
 });
 
-/* ═══════════════ Tetapan pukal (kini pada Catatan) ═══════════════ */
+/* ═══════════════ Tetapan pukal ═══════════════ */
 $('btnPukal').onclick = function () {
   const nilai = $('pukal').value;
   if (!nilai) { toast('Pilih catatan dahulu.', true); return; }
@@ -524,6 +601,7 @@ $('btnPukal').onclick = function () {
     const k = kunci(r.baris);
     const semasa = A.ubah[k] || { baris: r.baris, status: r.status, catatan: r.catatan, alasan: r.alasan };
     semasa.catatan = nilai;
+    if (nilai !== 'LAIN-LAIN') semasa.alasan = '';
     A.ubah[k] = semasa;
   });
   lukis(); kemasStatusSimpan();
@@ -538,11 +616,11 @@ $('btnSimpan').onclick = function () {
   if (!senarai.length) { toast('Tiada perubahan pada tab ini.'); return; }
 
   const tiadaAlasan = senarai.filter(function (p) {
-    return A.wajibAlasan.indexOf(String(p.catatan || '').toUpperCase()) >= 0 && !String(p.alasan || '').trim();
+    return String(p.catatan || '').toUpperCase() === 'LAIN-LAIN' && !String(p.alasan || '').trim();
   });
   if (tiadaAlasan.length) {
-    toast(tiadaAlasan.length + ' rekod berstatus ' + A.wajibAlasan.join(' / ') + ' belum ada alasan.', true);
-    $('tapisStatus').value = A.wajibAlasan[0];
+    toast(tiadaAlasan.length + ' rekod berstatus LAIN-LAIN belum ada alasan.', true);
+    $('tapisStatus').value = 'LAIN-LAIN';
     A.halaman = 1; lukis();
     return;
   }
@@ -557,7 +635,6 @@ $('btnSimpan').onclick = function () {
         toast(r.mesej, true);
         return;
       }
-      // Sahkan nilai baharu ke dalam cache tempatan (STATUS tidak berubah)
       senarai.forEach(function (p) {
         const asal = (A.data[A.jenis] || []).find(function (x) { return x.baris === p.baris; });
         if (asal) { asal.catatan = p.catatan; asal.alasan = p.alasan; }
