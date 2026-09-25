@@ -382,26 +382,24 @@ function muatScorecardPublic() {
         r.stats.forEach(function(s) {
           jumSelesai += Number(s.selesai || 0);
           sudah += Number(s.sudah || 0);
-          belum += Number(s.belumLogin !== undefined ? s.belumLogin : (s.belum || 0));
+          // Ambil s.belumLogin (Lajur BELUM LOGIN sebenar)
+          belum += Number(s.belumLogin || 0);
           pindah += Number(s.pindah || 0);
           idGmM += Number(s.idGuruMurid || 0);
           lain += Number(s.lainLain || 0);
         });
 
-        $('scJumlahSelesai').textContent = isNaN(jumSelesai) ? 0 : jumSelesai.toLocaleString();
-        $('scSudahLogin').textContent = isNaN(sudah) ? 0 : sudah.toLocaleString();
-        $('scBelumLogin').textContent = isNaN(belum) ? 0 : belum.toLocaleString();
-        $('scPindah').textContent = isNaN(pindah) ? 0 : pindah.toLocaleString();
-        $('scIdGuruMurid').textContent = isNaN(idGmM) ? 0 : idGmM.toLocaleString();
-        $('scLainLain').textContent = isNaN(lain) ? 0 : lain.toLocaleString();
+        $('scJumlahSelesai').textContent = Math.max(0, jumSelesai).toLocaleString();
+        $('scSudahLogin').textContent = Math.max(0, sudah).toLocaleString();
+        $('scBelumLogin').textContent = Math.max(0, belum).toLocaleString();
+        $('scPindah').textContent = Math.max(0, pindah).toLocaleString();
+        $('scIdGuruMurid').textContent = Math.max(0, idGmM).toLocaleString();
+        $('scLainLain').textContent = Math.max(0, lain).toLocaleString();
         $('lblStatusData').innerHTML = '<i></i> Terkini';
-      } else {
-        $('lblStatusData').innerHTML = '<i></i> Sila Kira Statistik';
       }
     })
     .catch(function(err) {
       console.error(err);
-      $('lblStatusData').innerHTML = '<i></i> Log masuk semakan';
     });
 }
 
