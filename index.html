@@ -233,28 +233,28 @@
       </div>
       <div class="scorecard-grid">
         <div class="card-item utama-card">
-          <span class="label">JUMLAH SEMAKAN</span>
-          <span class="nilai" id="scJumlahSelesai">0</span>
-        </div>
-        <div class="card-item sc-sudah">
-          <span class="label">SUDAH LOGIN</span>
-          <span class="nilai" id="scSudahLogin">0</span>
-        </div>
-        <div class="card-item sc-belum">
-          <span class="label">BELUM LOGIN</span>
-          <span class="nilai" id="scBelumLogin">0</span>
-        </div>
-        <div class="card-item sc-pindah">
-          <span class="label">TELAH BERPINDAH</span>
-          <span class="nilai" id="scPindah">0</span>
+          <span class="label">Jumlah ID Murid</span>
+          <span class="nilai" id="scJumlahMurid">0</span>
         </div>
         <div class="card-item sc-id">
-          <span class="label">ID GURU / MURID</span>
-          <span class="nilai" id="scIdGuruMurid">0</span>
+          <span class="label">Jumlah ID Guru</span>
+          <span class="nilai" id="scJumlahGuru">0</span>
         </div>
-        <div class="card-item sc-lain">
-          <span class="label">LAIN-LAIN</span>
-          <span class="nilai" id="scLainLain">0</span>
+        <div class="card-item sc-sudah">
+          <span class="label">Sudah Semak · Murid</span>
+          <span class="nilai" id="scSudahMurid">0</span>
+        </div>
+        <div class="card-item sc-sudah">
+          <span class="label">Sudah Semak · Guru</span>
+          <span class="nilai" id="scSudahGuru">0</span>
+        </div>
+        <div class="card-item sc-belum">
+          <span class="label">Belum Semak · Murid</span>
+          <span class="nilai" id="scBelumMurid">0</span>
+        </div>
+        <div class="card-item sc-belum">
+          <span class="label">Belum Semak · Guru</span>
+          <span class="nilai" id="scBelumGuru">0</span>
         </div>
       </div>
     </div>
@@ -377,29 +377,40 @@ function muatScorecardPublic() {
   panggil('dapatStatistik', [null])
     .then(function(r) {
       if (r && r.stats && r.stats.length) {
-        let jumSelesai = 0, sudah = 0, belum = 0, pindah = 0, idGmM = 0, lain = 0;
-        
+        let jumlahMurid = 0, jumlahGuru = 0, sudahMurid = 0, sudahGuru = 0, belumMurid = 0, belumGuru = 0;
+
+        // Lajur CATATAN sahaja yang menentukan "sudah semak" (diisi) vs "belum semak" (kosong).
+        // Setiap baris statistik sudah diasingkan ikut jenis (Murid / Guru) dari sheet _STATS.
         r.stats.forEach(function(s) {
-          jumSelesai += Number(s.selesai || 0);
-          sudah += Number(s.sudah || 0);
-          // Ambil s.belumLogin (Lajur BELUM LOGIN sebenar)
-          belum += Number(s.belumLogin || 0);
-          pindah += Number(s.pindah || 0);
-          idGmM += Number(s.idGuruMurid || 0);
-          lain += Number(s.lainLain || 0);
+          const jumlah = Number(s.jumlah || 0);
+          const selesai = Number(s.selesai || 0); // catatan diisi
+          const belum = Number(s.belum || 0);     // catatan kosong
+
+          if (s.jenis === 'Murid') {
+            jumlahMurid += jumlah;
+            sudahMurid += selesai;
+            belumMurid += belum;
+          } else if (s.jenis === 'Guru') {
+            jumlahGuru += jumlah;
+            sudahGuru += selesai;
+            belumGuru += belum;
+          }
         });
 
-        $('scJumlahSelesai').textContent = Math.max(0, jumSelesai).toLocaleString();
-        $('scSudahLogin').textContent = Math.max(0, sudah).toLocaleString();
-        $('scBelumLogin').textContent = Math.max(0, belum).toLocaleString();
-        $('scPindah').textContent = Math.max(0, pindah).toLocaleString();
-        $('scIdGuruMurid').textContent = Math.max(0, idGmM).toLocaleString();
-        $('scLainLain').textContent = Math.max(0, lain).toLocaleString();
+        $('scJumlahMurid').textContent = Math.max(0, jumlahMurid).toLocaleString();
+        $('scJumlahGuru').textContent = Math.max(0, jumlahGuru).toLocaleString();
+        $('scSudahMurid').textContent = Math.max(0, sudahMurid).toLocaleString();
+        $('scSudahGuru').textContent = Math.max(0, sudahGuru).toLocaleString();
+        $('scBelumMurid').textContent = Math.max(0, belumMurid).toLocaleString();
+        $('scBelumGuru').textContent = Math.max(0, belumGuru).toLocaleString();
         $('lblStatusData').innerHTML = '<i></i> Terkini';
+      } else {
+        $('lblStatusData').innerHTML = '<i></i> Tiada data';
       }
     })
     .catch(function(err) {
       console.error(err);
+      $('lblStatusData').innerHTML = '<i></i> Ralat memuat data';
     });
 }
 
